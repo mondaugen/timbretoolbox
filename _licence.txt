@@ -1,0 +1,5 @@
+By downloading this library code, you acknowledge the following licensing conditions:
+1- the code is provided as is without any guarantee of suitability to any need;
+2- the use is strictly limited to non-profit, research activities and excludes any commercial use, including the computation of data to be integrated into a commercial application or service;
+3 - no sub-licensing to any third party is allowed;
+4 - any communication of work for which the code was used shall explicitely mention its use, the joint IRCAM and McGill University copyright, and, if a written publication, the reference to the related article: Peeters, G., Giordano, B.L., Susini, P., Misdariis, N. & McAdams, S. (in press). The Timbre Toolbox: Extracting audio descriptors from musical signals. Journal of the Acoustical Society of America.
