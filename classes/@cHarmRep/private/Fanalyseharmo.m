@@ -104,9 +104,16 @@ for num_inharmo=1:nb_inharmo
 		candidate_harmo_pos_m	= round(candidate_harmo_hz_m/sr_hz*N)+1;
 
 		stock_pos_4m(:,num_delta,num_inharmo,:)		= candidate_harmo_pos_m;
-
 		for num_frame=1:nb_frame
-			totalenergy_3m(num_frame, num_delta, num_inharmo)	= sum( B_m(candidate_harmo_pos_m(num_frame,:), num_frame) );
+            B_m_num_rows__ = size(B_m);
+            B_m_num_rows__ = B_m_num_rows__(1);
+            % make sure all the indices are within the range of valid
+            % indices for B_m's rows.
+            valid_indices__ = candidate_harmo_pos_m(num_frame,:);
+            valid_indices__ = ...
+                valid_indices__(candidate_harmo_pos_m(num_frame,:) <= B_m_num_rows__);
+			totalenergy_3m(num_frame, num_delta, num_inharmo) ...
+                = sum( B_m(valid_indices__, num_frame) );
 		end
 
 		% ++++++++++++++++++++++++++++++
