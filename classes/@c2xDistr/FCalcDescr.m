@@ -30,30 +30,31 @@ if any( ...
     sum(f_ProbDistrY_m)
     error('Calculation of distributions failed.');
 end;
-i_NumMoments	= 4;								% === Number of moments to compute  
-f_Moments_m		= zeros(i_NumMoments, c.i_SizeX);	% === create empty output array for moments
 
-% === Calculate moments
-% === f_Moments_m must be empty on first iter.
-f_MeanCntr_m = repmat(c.f_SupY_v, 1, c.i_SizeX) ...
-                - repmat(f_Moments_m(1,:), c.i_SizeY, 1); 
-for i = 1:i_NumMoments
-	f_Moments_m(i,:)	= sum( (f_MeanCntr_m.^i) .* f_ProbDistrY_m );
-end;
+% === Calculate spectral moments
 
-% === Descriptors from first 4 moments
-f_Centroid_v	= f_Moments_m(1,:);
-f_StdDev_v		= sqrt( f_Moments_m(2,:) );
-f_Skew_v		= f_Moments_m(3,:) ./ (f_StdDev_v+eps).^3;
-f_Kurtosis_v	= f_Moments_m(4,:) ./ (f_StdDev_v+eps).^4;
+% Compute the variable of integration
+Y_ = repmat(c.f_SupY_v,1,c.i_SizeX);
+% Spectral centroid (mean)
+f_Centroid_v = sum( Y_ .* f_ProbDistrY_m );
+% Centre variable of integration around the mean
+f_MeanCntr_m = Y_ - repmat(f_Centroid_v, c.i_SizeY, 1);
+% Spectral spread (variance)
+f_Spread_v = sum(f_MeanCntr_m.^2 .* f_ProbDistrY_m) .^ 1/2;
+% Spectral skewness (skewness)
+f_Skew_v = sum(f_MeanCntr_m.^3 .* f_ProbDistrY_m) ./ (f_Spread_v .^ 3);
+% Spectral kurtosis (kurtosis)
+f_Kurtosis_v = sum(f_MeanCntr_m.^4 .* f_ProbDistrY_m) ./ (f_Spread_v .^ 4);
 
 % === Spectral slope (linear regression)
-f_Num_v		= c.i_SizeY .* (c.f_SupY_v' * f_ProbDistrY_m) - sum(c.f_SupY_v) .* sum(f_ProbDistrY_m);
+f_Num_v		= c.i_SizeY .* (c.f_SupY_v' * f_ProbDistrY_m) ...
+                - sum(c.f_SupY_v) .* sum(f_ProbDistrY_m);
 f_Den		= c.i_SizeY .* sum(c.f_SupY_v.^2) - sum(c.f_SupY_v).^2;
 f_Slope_v	= f_Num_v ./ f_Den;
 
 % === Spectral decrease (according to peeters report)
-f_Num_m		= c.f_DistrPts_m(2:c.i_SizeY, :) - repmat(c.f_DistrPts_m(1,:), c.i_SizeY-1, 1);
+f_Num_m		= c.f_DistrPts_m(2:c.i_SizeY, :) ...
+                - repmat(c.f_DistrPts_m(1,:), c.i_SizeY-1, 1);
 f_Den_v		= 1 ./ [1:c.i_SizeY-1];
 f_SpecDecr_v= (f_Den_v * f_Num_m) ./ sum(c.f_DistrPts_m(2:c.i_SizeY,:)+eps);
 
