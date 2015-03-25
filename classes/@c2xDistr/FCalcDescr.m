@@ -25,13 +25,18 @@ do_affiche = 0;
 % === Local statistical measures
 % === c.f_DistrPts_m (N = c.i_SizeY, nb_frame = c.i_SizeX)
 f_ProbDistrY_m	= c.f_DistrPts_m ./ repmat( sum(c.f_DistrPts_m, 1)+eps, c.i_SizeY, 1 ); % === normalize distribution in Y dim
-
+if any( ...
+    abs(sum(f_ProbDistrY_m) - ones(1,size(f_ProbDistrY_m,2))) > 300*eps),
+    sum(f_ProbDistrY_m)
+    error('Calculation of distributions failed.');
+end;
 i_NumMoments	= 4;								% === Number of moments to compute  
 f_Moments_m		= zeros(i_NumMoments, c.i_SizeX);	% === create empty output array for moments
 
 % === Calculate moments
 % === f_Moments_m must be empty on first iter.
-f_MeanCntr_m		= repmat(c.f_SupY_v, 1, c.i_SizeX) - repmat(f_Moments_m(1,:), c.i_SizeY, 1); 
+f_MeanCntr_m = repmat(c.f_SupY_v, 1, c.i_SizeX) ...
+                - repmat(f_Moments_m(1,:), c.i_SizeY, 1); 
 for i = 1:i_NumMoments
 	f_Moments_m(i,:)	= sum( (f_MeanCntr_m.^i) .* f_ProbDistrY_m );
 end;
