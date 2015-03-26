@@ -40,7 +40,7 @@ f_Centroid_v = sum( Y_ .* f_ProbDistrY_m );
 % Centre variable of integration around the mean
 f_MeanCntr_m = Y_ - repmat(f_Centroid_v, c.i_SizeY, 1);
 % Spectral spread (variance)
-f_Spread_v = sum(f_MeanCntr_m.^2 .* f_ProbDistrY_m) .^ 1/2;
+f_Spread_v = sum(f_MeanCntr_m.^2 .* f_ProbDistrY_m) .^ (1/2);
 % Spectral skewness (skewness)
 f_Skew_v = sum(f_MeanCntr_m.^3 .* f_ProbDistrY_m) ./ (f_Spread_v .^ 3);
 % Spectral kurtosis (kurtosis)
@@ -88,8 +88,12 @@ f_SpecCrest_v = max(c.f_DistrPts_m) ./ (f_ArthMean_v+eps);
 % ==============================
 % ||| Build output structure |||
 % ==============================
+% debugging
+desc_s.f_MeanCntr_m = f_MeanCntr_m;
+desc_s.f_ProbDistrY_m = f_ProbDistrY_m;
+%
 desc_s.SpecCent		= f_Centroid_v;			% spectral centroid
-desc_s.SpecSpread	= f_StdDev_v;			% spectral standard deviation
+desc_s.SpecSpread	= f_Spread_v;			% spectral standard deviation
 desc_s.SpecSkew		= f_Skew_v;				% spectral skew
 desc_s.SpecKurt		= f_Kurtosis_v;			% spectral kurtosis
 
