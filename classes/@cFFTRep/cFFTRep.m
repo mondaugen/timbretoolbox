@@ -50,13 +50,50 @@ switch nargin
         oSnd        = varargin{1};
         config_s    = varargin{2};
         % === check completness of config.
-        if ~isfield( config_s, 'i_FFTSize'),		config_s.i_FFTSize		= 2048;			end;
-        if ~isfield( config_s, 'i_WinSize'),		config_s.f_WinSize_sec	= 1025/44100;	end; % === is 0.0232s at 44100Hz
-        if ~isfield( config_s, 'i_HopSize'),		config_s.f_HopSize_sec	= 256/44100;	end; % === is 0.0058s at 44100Hz
- 
-		config_s.i_WinSize = round(config_s.f_WinSize_sec*FGetSampRate(oSnd));
-		config_s.i_HopSize = round(config_s.f_HopSize_sec*FGetSampRate(oSnd));
-		config_s.i_FFTSize = 2^nextpow2(config_s.i_WinSize);
+
+        % If window size in samples specified, calculate the window size in
+        % seconds
+        if isfield(config_s,'i_WinSize'),
+            config_s.f_WinSize_sec = config_s.i_WinSize/FGetSampRate(oSnd);
+        end;
+        % If window size in seconds specified, calculate the window size in
+        % samples. Notice that you can't specify both the window size in
+        % seconds and in samples, so seconds takes precident (and replaces i_WinSize).
+        if isfield(config_s,'f_WinSize_sec'),
+            config_s.i_WinSize = round(config_s.f_WinSize_sec*FGetSampRate(oSnd));
+        end;
+        % If hop size in samples specified, calculate the window size in
+        % seconds
+        if isfield(config_s,'i_HopSize'),
+            config_s.f_HopSize_sec = config_s.i_HopSize/FGetSampRate(oSnd);
+        end;
+        % If window size in seconds specified, calculate the window size in
+        % samples. Notice that you can't specify both the window size in
+        % seconds and in samples, so seconds takes precident (and replaces i_WinSize).
+        if isfield(config_s,'f_HopSize_sec'),
+            config_s.i_HopSize = round(config_s.f_HopSize_sec*FGetSampRate(oSnd));
+        end;
+        
+         % Default window size ends up being 1025 samples
+        if ~isfield( config_s, 'f_WinSize_sec'), 
+            config_s.f_WinSize_sec	= 1025/FGetSampRate(oSnd);
+        end;
+        % Default hop size ends up being 256 samples
+        if ~isfield( config_s, 'f_HopSize_sec'),
+            config_s.f_HopSize_sec	= 256/FGetSampRate(oSnd);
+        end;
+        if ~isfield( config_s, 'i_WinSize'),
+            config_s.i_WinSize	= round(config_s.f_WinSize_sec*FGetSampRate(oSnd));
+        end;
+        % Default hop size ends up being 256 samples
+        if ~isfield( config_s, 'i_HopSize'),
+            config_s.i_HopSize = round(config_s.f_HopSize_sec*FGetSampRate(oSnd));
+        end;		
+		
+        if ~isfield( config_s, 'i_FFTSize'), config_s.i_FFTSize = 2^nextpow2(config_s.i_WinSize); end;
+        if config_s.i_FFTSize < config_s.i_WinSize,
+            warning('The FFT size is less than the window size.');
+        end;
 
         if ~isfield( config_s, 'w_WinType'),		config_s.w_WinType = 'hamming';	end;
 		if ~isfield( config_s, 'f_Win_v')
@@ -66,7 +103,7 @@ switch nargin
         if ~isfield( config_s, 'f_BinSize'),		config_s.f_BinSize	= FGetSampRate(oSnd) ./ config_s.i_FFTSize; end;
         if ~isfield( config_s, 'f_SampRateY'),		config_s.f_SampRateY= config_s.i_FFTSize ./ FGetSampRate(oSnd); end;   
         if ~isfield( config_s, 'w_DistType')		config_s.w_DistType	= 'pow'; end;  
-
+                
     otherwise
         disp('Error: bad set of arguements to cFFTRep');
         %c = cFFTRep(zeros(1,10));
