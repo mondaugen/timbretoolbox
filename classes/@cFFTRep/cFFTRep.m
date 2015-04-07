@@ -96,7 +96,7 @@ switch nargin
         end;
 
         if ~isfield( config_s, 'w_WinType'),		config_s.w_WinType = 'hamming';	end;
-		if ~isfield( config_s, 'f_Win_v')
+		if ~isfield( config_s, 'f_Win_v'),
             config_s.f_Win_v = eval(sprintf('%s(%d)', config_s.w_WinType, config_s.i_WinSize));
         end;
         if ~isfield( config_s, 'f_SampRateX'),		config_s.f_SampRateX= FGetSampRate(oSnd) ./ config_s.i_HopSize; end;
@@ -117,7 +117,20 @@ c.i_WinSize	= config_s.i_WinSize;
 c.i_HopSize	= config_s.i_HopSize;
 c.w_WinType	= config_s.w_WinType;
 c.f_Win_v	= config_s.f_Win_v;
-iHWinSize	= fix((c.i_WinSize-1)/2);
+% If the window is centred at t, this is the starting index at which to
+% look up the signal which you want to multiply by the window. It is a
+% negative number because (almost) half of the window will be before time t
+% and half after. In fact, if the length of the window N is an even number,
+% it is set up so this number equals -1*(N/2 - 1). If the length of the window
+% is odd, this number equals -1*(N-1)/2.
+iLHWinSize = ceil(-(c.i_WinSize-1)/2);
+% This is the last index at which to look up signal values and is equal to
+% (N-1)/2 if the length N of the window is odd and N/2 if the length of the
+% window is even. This means that in the even case, the window has an
+% unequal number of past and future values, i.e., time t is not the centre
+% of the window, but slightly to the left of the centre of the window
+% (before it).
+iRHWinSize = ceil((c.i_WinSize-1)/2);
 
 % === 2x distribution elements
 d.f_SampRateX = config_s.f_SampRateX;
@@ -128,11 +141,11 @@ f_Sig_v = FGetSignal(oSnd);
 if isreal(f_Sig_v), f_Sig_v = hilbert(f_Sig_v); end
 
 % === pre/post-pad signal
-f_Sig_v = [zeros(iHWinSize,1); f_Sig_v; zeros(iHWinSize,1)];
+f_Sig_v = [zeros(-1*iLHWinSize,1); f_Sig_v; zeros(iRHWinSize,1)];
         
 % === support vectors            
 i_Len		= length(f_Sig_v);
-i_Ind		= [iHWinSize+1 : c.i_HopSize : i_Len-iHWinSize];
+i_Ind		= [-iLHWinSize+1 : c.i_HopSize : i_Len-iRHWinSize];
 d.i_SizeX	= length(i_Ind);
 d.i_SizeY	= c.i_FFTSize;
 d.f_SupX_v	= [0:(d.i_SizeX-1)]./config_s.f_SampRateX;		% === X support (time)
@@ -141,7 +154,7 @@ d.f_SupY_v	= ([0:(d.i_SizeY-1)]./d.i_SizeY/2)';			% === Y support (normalized fr
 % === calculate power spectrum
 d.f_DistrPts_m = zeros(d.i_SizeY, d.i_SizeX);
 for( i=1:d.i_SizeX )
-    d.f_DistrPts_m(1:c.i_WinSize,i) = f_Sig_v(i_Ind(i)-iHWinSize:i_Ind(i)+iHWinSize) .* c.f_Win_v; % calc. windowed sig.
+    d.f_DistrPts_m(1:c.i_WinSize,i) = f_Sig_v(i_Ind(i)+iLHWinSize:i_Ind(i)+iRHWinSize) .* c.f_Win_v; % calc. windowed sig.
 end;
 
 % === fft (cols of dist.)
