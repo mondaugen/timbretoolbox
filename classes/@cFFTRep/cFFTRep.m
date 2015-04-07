@@ -149,7 +149,7 @@ i_Ind		= [-iLHWinSize+1 : c.i_HopSize : i_Len-iRHWinSize];
 d.i_SizeX	= length(i_Ind);
 d.i_SizeY	= c.i_FFTSize;
 d.f_SupX_v	= [0:(d.i_SizeX-1)]./config_s.f_SampRateX;		% === X support (time)
-d.f_SupY_v	= ([0:(d.i_SizeY-1)]./d.i_SizeY/2)';			% === Y support (normalized freq.)
+d.f_SupY_v	= ([0:(d.i_SizeY-1)]./d.i_SizeY)';              % === Y support (normalized freq.)
 
 % === calculate power spectrum
 d.f_DistrPts_m = zeros(d.i_SizeY, d.i_SizeX);

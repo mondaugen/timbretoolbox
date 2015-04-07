@@ -25,11 +25,11 @@ do_affiche = 0;
 % === Local statistical measures
 % === c.f_DistrPts_m (N = c.i_SizeY, nb_frame = c.i_SizeX)
 f_ProbDistrY_m	= c.f_DistrPts_m ./ repmat( sum(c.f_DistrPts_m, 1)+eps, c.i_SizeY, 1 ); % === normalize distribution in Y dim
-if any( ...
-    abs(sum(f_ProbDistrY_m) - ones(1,size(f_ProbDistrY_m,2))) > 300*eps),
-    sum(f_ProbDistrY_m)
-    error('Calculation of distributions failed.');
-end;
+%if any( ...
+%    abs(sum(f_ProbDistrY_m) - ones(1,size(f_ProbDistrY_m,2))) > 300*eps),
+%    sum(f_ProbDistrY_m)
+%    error('Calculation of distributions failed.');
+%end;
 
 % === Calculate spectral moments
 
