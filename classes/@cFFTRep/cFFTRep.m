@@ -142,7 +142,7 @@ if isreal(f_Sig_v), f_Sig_v = hilbert(f_Sig_v); end
 
 % === pre/post-pad signal
 f_Sig_v = [zeros(-1*iLHWinSize,1); f_Sig_v; zeros(iRHWinSize,1)];
-        
+
 % === support vectors            
 i_Len		= length(f_Sig_v);
 i_Ind		= [-iLHWinSize+1 : c.i_HopSize : i_Len-iRHWinSize];

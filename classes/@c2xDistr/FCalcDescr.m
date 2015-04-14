@@ -53,12 +53,20 @@ f_Den		= c.i_SizeY/2 .* sum(c.f_SupY_v(1:floor(end/2)).^2) - sum(c.f_SupY_v(1:fl
 f_Slope_v	= f_Num_v ./ f_Den;
 
 % === Spectral decrease (according to peeters report)
+% Even though this uses the entire spectrum, there is no contribution from
+% values above Nyquist.
 f_Num_m		= c.f_DistrPts_m(2:c.i_SizeY, :) ...
                 - repmat(c.f_DistrPts_m(1,:), c.i_SizeY-1, 1);
 f_Den_v		= 1 ./ [1:c.i_SizeY-1];
+% The sum is carried out by inner product.
 f_SpecDecr_v= (f_Den_v * f_Num_m) ./ sum(c.f_DistrPts_m(2:c.i_SizeY,:)+eps);
 
 % === Spectral roll-off
+% Even though this uses the entire spectrum, there is no contribution from
+% values above Nyquist.
+% This will only be correct according to the definition if the power
+% spectrum is used as it assumes that the amplitude values have already
+% been squared.
 f_Thresh		= 0.95;
 f_CumSum_m		= cumsum(c.f_DistrPts_m);
 f_Sum_v			= f_Thresh * sum(c.f_DistrPts_m, 1);
@@ -70,14 +78,15 @@ f_SpecRollOff_v	= c.f_SupY_v(i_Ind_v)';
 f_CrossProd_v	= sum( c.f_DistrPts_m .* [zeros(c.i_SizeY,1), c.f_DistrPts_m(:,1:c.i_SizeX-1)] , 1);
 f_AutoProd_v	= sum( c.f_DistrPts_m.^2 , 1) .* sum( [zeros(c.i_SizeY,1), c.f_DistrPts_m(:,1:c.i_SizeX-1)].^2, 1);
 f_SpecVar_v		= 1 - f_CrossProd_v ./ (sqrt(f_AutoProd_v) + eps);
-f_SpecVar_v(1)	= f_SpecVar_v(2);		% === the first value is alway incorrect because of "c.f_DistrPts_m .* [zeros(c.i_SizeY,1)"
+f_SpecVar_v(1)	= f_SpecVar_v(2);		% === the first value is always incorrect because of "c.f_DistrPts_m .* [zeros(c.i_SizeY,1)"
 
 % === Energy
 f_Energy_v		= sum(c.f_DistrPts_m);  
 
 % === Spectral Flatness
-f_GeoMean_v		= exp( (1/c.i_SizeY) * sum(log(c.f_DistrPts_m+eps)) ); 
-f_ArthMean_v	= sum(c.f_DistrPts_m) ./ c.i_SizeY;
+% We only consider the spectrum below Nyquist
+f_GeoMean_v		= exp( (1/floor(c.i_SizeY/2)) * sum(log(c.f_DistrPts_m(1:floor(end/2),:)+eps)) ); 
+f_ArthMean_v	= sum(c.f_DistrPts_m(1:floor(end/2))) ./ floor(c.i_SizeY/2);
 f_SpecFlat_v	= f_GeoMean_v ./ (f_ArthMean_v+eps);
 
 % === Spectral Crest Measure
