@@ -47,9 +47,9 @@ f_Skew_v = sum(f_MeanCntr_m.^3 .* f_ProbDistrY_m) ./ (f_Spread_v .^ 3);
 f_Kurtosis_v = sum(f_MeanCntr_m.^4 .* f_ProbDistrY_m) ./ (f_Spread_v .^ 4);
 
 % === Spectral slope (linear regression)
-f_Num_v		= c.i_SizeY .* (c.f_SupY_v' * f_ProbDistrY_m) ...
-                - sum(c.f_SupY_v) .* sum(f_ProbDistrY_m);
-f_Den		= c.i_SizeY .* sum(c.f_SupY_v.^2) - sum(c.f_SupY_v).^2;
+f_Num_v		= c.i_SizeY/2 .* (c.f_SupY_v(1:floor(end/2))' * f_ProbDistrY_m(1:floor(end/2),:)) ...
+                - sum(c.f_SupY_v(1:floor(end/2))) .* sum(f_ProbDistrY_m(1:floor(end/2),:));
+f_Den		= c.i_SizeY/2 .* sum(c.f_SupY_v(1:floor(end/2)).^2) - sum(c.f_SupY_v(1:floor(end/2))).^2;
 f_Slope_v	= f_Num_v ./ f_Den;
 
 % === Spectral decrease (according to peeters report)
