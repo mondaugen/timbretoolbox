@@ -151,28 +151,39 @@ d.i_SizeY	= c.i_FFTSize;
 d.f_SupX_v	= [0:(d.i_SizeX-1)]./config_s.f_SampRateX;		% === X support (time)
 d.f_SupY_v	= ([0:(d.i_SizeY-1)]./d.i_SizeY)';              % === Y support (normalized freq.)
 
-% === calculate power spectrum
+
+% calc. windowed sig.
 d.f_DistrPts_m = zeros(d.i_SizeY, d.i_SizeX);
 for( i=1:d.i_SizeX )
-    d.f_DistrPts_m(1:c.i_WinSize,i) = f_Sig_v(i_Ind(i)+iLHWinSize:i_Ind(i)+iRHWinSize) .* c.f_Win_v; % calc. windowed sig.
+    d.f_DistrPts_m(1:c.i_WinSize,i) = f_Sig_v(i_Ind(i)+iLHWinSize:i_Ind(i)+iRHWinSize) .* c.f_Win_v; 
 end;
 
 % === fft (cols of dist.)
-if( strcmp(config_s.w_DistType, 'pow') )						% === Power distribution
-    d.f_DistrPts_m			= 1/c.i_FFTSize .* abs( fft( d.f_DistrPts_m, c.i_FFTSize) ).^2;
-    d.f_DistrPts_m			= d.f_DistrPts_m ./ sum(c.f_Win_v .^2); % === remove window energy
-    d.f_DistrPts_m(2:end)	= d.f_DistrPts_m(2:end) ./ 2;		% === remove added energy from hilbert x-form?
-    
-elseif( strcmp(config_s.w_DistType, 'mag') )					% === Magnitude distribution
-    d.f_DistrPts_m			= sqrt(1/c.i_FFTSize) .* abs( fft( d.f_DistrPts_m, c.i_FFTSize) );
-    d.f_DistrPts_m			= d.f_DistrPts_m ./ sum(abs(c.f_Win_v));
-    d.f_DistrPts_m(2:end)	= d.f_DistrPts_m(2:end) ./ 2;    
-    
-else % === Might want to add 'log' option as well (similar to IRCAM toolbox)
-    disp('Error: unknown distribution type (options are: pow/mag)');
-    exit(1);
-end;
+% note that this divides by the window size
 
+% compute FFT unless we want unprocessed data
+if strcmp(config_s.w_DistType,'nofft')==0
+    d.f_DistrPts_m = fft(d.f_DistrPts_m, c.i_FFTSize);
+    if strcmp(config_s.w_DistType, 'complex')
+        d.f_DistrPts_m			= 1/c.i_FFTSize .* d.f_DistrPts_m;
+        d.f_DistrPts_m			= d.f_DistrPts_m ./ sum(c.f_Win_v .^2); % === remove window energy
+        d.f_DistrPts_m(2:end)	= d.f_DistrPts_m(2:end) ./ 2;		% === remove added energy from hilbert x-form?
+    elseif strcmp(config_s.w_DistType, 'pow') % === Power distribution
+        d.f_DistrPts_m			= 1/c.i_FFTSize .* abs(d.f_DistrPts_m).^2;
+        d.f_DistrPts_m			= d.f_DistrPts_m ./ sum(c.f_Win_v .^2); % === remove window energy
+        d.f_DistrPts_m(2:end)	= d.f_DistrPts_m(2:end) ./ 2;		% === remove added energy from hilbert x-form?
+    elseif strcmp(config_s.w_DistType, 'mag') % === Magnitude distribution
+        d.f_DistrPts_m			= sqrt(1/c.i_FFTSize) .* abs(d.f_DistrPts_m);
+        d.f_DistrPts_m			= d.f_DistrPts_m ./ sum(abs(c.f_Win_v));
+        d.f_DistrPts_m(2:end)	= d.f_DistrPts_m(2:end) ./ 2;
+    elseif strcmp(config_s.w_DistType, 'mag_noscaling')
+        % magnitude distribution with no scaling
+        d.f_DistrPts_m = abs(d.f_DistrPts_m);
+    else % === Might want to add 'log' option as well (similar to IRCAM toolbox)
+        disp('Error: unknown distribution type (options are: pow/mag)');
+        exit(1);
+    end;
+end;
 
 % === Build class
 c = class(c, 'cFFTRep', c2xDistr(d)); % inherit generic distribution properties
