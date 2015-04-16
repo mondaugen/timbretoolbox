@@ -47,14 +47,12 @@ f_Skew_v = sum(f_MeanCntr_m.^3 .* f_ProbDistrY_m) ./ (f_Spread_v .^ 3);
 f_Kurtosis_v = sum(f_MeanCntr_m.^4 .* f_ProbDistrY_m) ./ (f_Spread_v .^ 4);
 
 % === Spectral slope (linear regression)
-f_Num_v		= c.i_SizeY/2 .* (c.f_SupY_v(1:floor(end/2))' * f_ProbDistrY_m(1:floor(end/2),:)) ...
-                - sum(c.f_SupY_v(1:floor(end/2))) .* sum(f_ProbDistrY_m(1:floor(end/2),:));
-f_Den		= c.i_SizeY/2 .* sum(c.f_SupY_v(1:floor(end/2)).^2) - sum(c.f_SupY_v(1:floor(end/2))).^2;
+f_Num_v		= c.i_SizeY .* (c.f_SupY_v' * f_ProbDistrY_m) ...
+                - sum(c.f_SupY_v) .* sum(f_ProbDistrY_m);
+f_Den		= c.i_SizeY .* sum(c.f_SupY_v.^2) - sum(c.f_SupY_v).^2;
 f_Slope_v	= f_Num_v ./ f_Den;
 
 % === Spectral decrease (according to peeters report)
-% Even though this uses the entire spectrum, there is no contribution from
-% values above Nyquist.
 f_Num_m		= c.f_DistrPts_m(2:c.i_SizeY, :) ...
                 - repmat(c.f_DistrPts_m(1,:), c.i_SizeY-1, 1);
 f_Den_v		= 1 ./ [1:c.i_SizeY-1];
@@ -62,8 +60,6 @@ f_Den_v		= 1 ./ [1:c.i_SizeY-1];
 f_SpecDecr_v= (f_Den_v * f_Num_m) ./ sum(c.f_DistrPts_m(2:c.i_SizeY,:)+eps);
 
 % === Spectral roll-off
-% Even though this uses the entire spectrum, there is no contribution from
-% values above Nyquist.
 % This will only be correct according to the definition if the power
 % spectrum is used as it assumes that the amplitude values have already
 % been squared.
@@ -85,8 +81,8 @@ f_Energy_v		= sum(c.f_DistrPts_m);
 
 % === Spectral Flatness
 % We only consider the spectrum below Nyquist
-f_GeoMean_v		= exp( (1/floor(c.i_SizeY/2)) * sum(log(c.f_DistrPts_m(1:floor(end/2),:)+eps)) ); 
-f_ArthMean_v	= sum(c.f_DistrPts_m(1:floor(end/2))) ./ floor(c.i_SizeY/2);
+f_GeoMean_v		= exp( (1/c.i_SizeY) * sum(log(c.f_DistrPts_m+eps)) ); 
+f_ArthMean_v	= sum(c.f_DistrPts_m) ./ c.i_SizeY;
 f_SpecFlat_v	= f_GeoMean_v ./ (f_ArthMean_v+eps);
 
 % === Spectral Crest Measure

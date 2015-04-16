@@ -8,10 +8,68 @@
 % =======
 % (1) cSound object (mandatory)
 % (2) configuration structure (optional)
+% The configuration structure contains the following fields. If any of the
+% fields are not specified, they are calculated or given default values.
+%   i_FFTSize     -- The size of the FFT performed on each frame. This should be
+%                    greater than or equal to the window size in samples because
+%                    the STFT algorithm will not window and fold the time-domain
+%                    signal appropriately if the FFT size is shorter than the
+%                    window as described in Portnoff (1980).
+%   f_WinSize_sec -- The size of the window in seconds.
+%   i_WinSize     -- The size of the window in samples. If both the size in
+%                    samples and seconds are specified, seconds takes precident.
+%   f_HopSize_sec -- The hop size in seconds.
+%   i_HopSize     -- The hop size in samples. The hop size in seconds takes
+%                    precident.
+%   w_WinType     -- The kind of window used. This can be the name of any
+%                    function that accepts an integer argument N and returns a
+%                    vector of length N containing the window.
+%   f_Win_v       -- A vector containing a window. If this is specified,
+%                    w_WinType will not be used to calculate a window. Note that
+%                    it is not checked that the length of this vector be the
+%                    same as i_WinSize!
+%   f_SampRate_x  -- If not specified, this is the sample rate divided by the
+%                    hop size in samples.
+%   f_BinSize     -- If not specified this is the sample rate divided by the FFT
+%                    size in samples.
+%   f_SampRate_y  -- If not specified this is the reciprocal of the bin size.
+%   w_DistType    -- The type of spectrum computed. By default this is "pow" and
+%                    computes the power spectrum. Other possible values are:
+%                       "pow"           -- Computes the power spectrum. The
+%                                          spectrum is divided by two times the
+%                                          FFT size, the sum of the squared
+%                                          values of the window and all values
+%                                          except for the first value are
+%                                          divided by 2 to remove energy
+%                                          contributed by the Hilbert transform.
+%                       "mag"           -- Computes the magnitude spectrum.
+%                                          Spectrum is scaled as for "pow"
+%                                          except that it is instread divided by
+%                                          the sum of the unsquared values of
+%                                          the window.
+%                       "complex"       -- Computes the complex spectrum, which
+%                                          is then scaled the same way as for
+%                                          "mag".
+%                       "mag_noscaling" -- Computes the magnitude spectrum
+%                                          without any of the scaling.
+% The soundfile is analysed using the short-time Fourier transform of the
+% analytic signal, which is the original signal transformed using the Hilbert
+% transform.
 %
 % OUTPUTS:
 % ========
 % (1) FFTRep object
+% The result is a cFFTRep object which contains, through class inheritance of a
+% c2xDistr object,
+%   a matrix f_DistrPts_m whose columns are the FFT frames corresponding to the
+%                         sample points and whose rows are the spectrum values
+%                         from 0 to half the sample rate, 
+%   a vector d.f_SupX_v   containing the seconds to which the centre of each
+%                         analysis window refers, and 
+%   a vector d.f_SupY_v   containing the normalized frequencies to which each
+%                         row corresponds, up to half the sampling rate.
+% This means that the columns of this matrix are of length i_FFTSize/2.
+% 
 %
 % Member functions
 % ----------------
@@ -147,9 +205,10 @@ f_Sig_v = [zeros(-1*iLHWinSize,1); f_Sig_v; zeros(iRHWinSize,1)];
 i_Len		= length(f_Sig_v);
 i_Ind		= [-iLHWinSize+1 : c.i_HopSize : i_Len-iRHWinSize];
 d.i_SizeX	= length(i_Ind);
-d.i_SizeY	= c.i_FFTSize;
-d.f_SupX_v	= [0:(d.i_SizeX-1)]./config_s.f_SampRateX;		% === X support (time)
-d.f_SupY_v	= ([0:(d.i_SizeY-1)]./d.i_SizeY)';              % === Y support (normalized freq.)
+d.i_SizeY	= c.i_FFTSize/2; % Half the size because we use the analytic signal
+                             % (the spectrum above this frequency is 0)
+d.f_SupX_v	= [0:(d.i_SizeX-1)]./config_s.f_SampRateX; % === X support (time)
+d.f_SupY_v	= ([0:(d.i_SizeY-1)]./d.i_SizeY/2)';       % === Y support (normalized freq.)
 
 
 % calc. windowed sig.
@@ -184,6 +243,7 @@ if strcmp(config_s.w_DistType,'nofft')==0
         exit(1);
     end;
 end;
-
+% only keep half the spectrum
+d.f_DistrPts_m = d.f_DistrPts_m(1:floor(end/2),:);
 % === Build class
 c = class(c, 'cFFTRep', c2xDistr(d)); % inherit generic distribution properties
