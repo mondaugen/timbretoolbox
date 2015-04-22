@@ -11,7 +11,7 @@
 %
 % OUTPUTS:
 % ========
-% - dTEE_s	descriptors pf Temporal Energu Envelope
+% - dTEE_s	descriptors of Temporal Energy Envelope
 % - dAS_s	descriptors of Audio Signal
 %
 % See cSound
