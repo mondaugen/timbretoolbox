@@ -35,6 +35,7 @@ if( do_s.b_STFTmag )
 	fprintf(1, 'Descriptors based on STFTmag\n');
 	FFTConfig1_s.w_DistType	= 'mag'; % other config. args. will take defaults
 	FFT1_o					= cFFTRep(Snd_o, FFTConfig1_s);
+	ALLDESC_s.STFTmag_raw	= FFT1_o;
 	ALLDESC_s.STFTmag		= FCalcDescr(FFT1_o);
 end
 
@@ -43,6 +44,7 @@ if( do_s.b_STFTpow )
 	fprintf(1, 'Descriptors based on STFTpow\n');
 	FFTConfig2_s.w_DistType	= 'pow'; % other config. args. will take defaults
 	FFT2_o					= cFFTRep(Snd_o, FFTConfig2_s);
+	ALLDESC_s.STFTpow_raw	= FFT2_o;
 	ALLDESC_s.STFTpow		= FCalcDescr(FFT2_o);
 end;
 
@@ -50,6 +52,7 @@ if( do_s.b_Harmonic )
 	% === Sinusoidal Harmonic Model Representation
 	fprintf(1, 'Descriptors based on Harmonic\n');
     Harm_o                  = cHarmRep(Snd_o, config_s);
+	ALLDESC_s.Harmonic_raw	= Harm_o;
 	ALLDESC_s.Harmonic		= FCalcDescr(Harm_o);
 end
 
@@ -61,6 +64,7 @@ if( do_s.b_ERBfft )
 	ERBConfig1_s.w_Method	= 'fft';
 	ERBConfig1_s.f_Exp		= 1/4'; % partial loudness exponent (0.25 from Hartmann97)
 	ERB1_o					= cERBRep(Snd_o, ERBConfig1_s);
+	ALLDESC_s.ERBfft_raw 	= ERB1_o;
 	ALLDESC_s.ERBfft 		= FCalcDescr(ERB1_o);
 end
 
@@ -70,6 +74,7 @@ if( do_s.b_ERBgam )
 	ERBConfig2_s.w_Method	= 'gammatone';
 	ERBConfig2_s.f_Exp		= 1/4'; % partial loudness exponent (0.25 from Hartmann97)
 	ERB2_o					= cERBRep(Snd_o, ERBConfig2_s);
+	ALLDESC_s.ERBgam_raw 	= ERB2_o;
 	ALLDESC_s.ERBgam 		= FCalcDescr(ERB2_o);
 end
 
