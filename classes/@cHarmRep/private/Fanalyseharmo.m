@@ -63,8 +63,19 @@ end
 % ==========================================================
 % === Compute sinusoidal harmonic parameters
 
-L_sec			= 0.1;					% === analysis widow length
-STEP_sec		= L_sec/4;				% === hop size
+
+if isfield(config_s,'f_WinSize_sec'),
+    L_sec       = config_s.f_WinSize_sec;
+else,
+    L_sec		= 0.1; % === analysis window length
+end
+
+if isfield(config_s,'f_HopSize_sec'),
+    STEP_sec	= config_s.f_HopSize_sec;
+else,
+    STEP_sec	= L_sec/4; % === hop size
+end;
+
 L_n				= round(L_sec*sr_hz);
 STEP_n			= round(STEP_sec*sr_hz);
 N				= 4*2^nextpow2(L_n);	% === large zero-padding to get better frequency resolution
@@ -72,7 +83,8 @@ N				= 4*2^nextpow2(L_n);	% === large zero-padding to get better frequency resol
 fenetre_v		= boxcar(L_n);
 % === 2010/08/24 peeters@ircam.fr: window normalization
 fenetre_v		= 2 * fenetre_v / sum(fenetre_v);
-[B_m, F_v, T_v] = specgram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
+%[B_m, F_v, T_v] = specgram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
+[B_m, F_v, T_v] = FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
 B_m				= abs(B_m);
 T_v				= T_v+L_sec/2;
 
