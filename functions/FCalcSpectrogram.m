@@ -1,4 +1,4 @@
-function [f_DistrPts_m,f_SupY_v,f_SupX_v] = FCalcSpectrogram(f_Sig_v, ...
+function [f_DistrPts_m,f_SupY_v,f_SupX_v,f_ENBW] = FCalcSpectrogram(f_Sig_v, ...
     i_FFTSize, sr_hz, f_Win_v, i_Overlap, w_DistType)
 % FCALCSPECTROGRAM - Calculates the spectrogram of a signal
 % f_Sig_v   - The signal to compute a spectrogram of.
@@ -9,12 +9,31 @@ function [f_DistrPts_m,f_SupY_v,f_SupX_v] = FCalcSpectrogram(f_Sig_v, ...
 % i_Overlap - The number of samples of overlap. Stated this way to be compatible
 %             with "specgram". To get the the overlap from the hop size, do:
 %             i_Overlap = length(f_Win_v) - i_HopSize.
+% 
+% Returns 
+% f_DistrPts_m - the distribution points (not a valid probability distribution!)
+% f_SupY_v     - the normalized frequencies to which the rows of the
+%                distribution refer.
+% f_SupX_v     - the times to which the columns of the distribution refer (in
+%                seconds, weird I know)
+% f_ENBW       - The ENBW total over all bins of the window used. This can be
+%                used to compute the total power in each frame from the
+%                resulting power spectrum: 
+%                   P_total = 2*sum(f_DistrPts_m)./f_ENBW
+%                The reason for the 2 is because half of the spectrum is
+%                omitted (frequencies above Nyquist are not stored). Note that
+%                this only applies to the power spectrum calculation.
+                    
+
 if (nargin == 5),
     w_DistType='mag';
 end;
 i_WinSize = length(f_Win_v);
 i_HopSize = i_WinSize - i_Overlap;
 f_SampRateX = sr_hz / i_HopSize;
+
+% Make column vector
+f_Sig_v = f_Sig_v(:);
 
 % If the window is centred at t, this is the starting index at which to
 % look up the signal which you want to multiply by the window. It is a
@@ -54,17 +73,14 @@ end;
 if strcmp(w_DistType,'nofft')==0
     f_DistrPts_m = fft(f_DistrPts_m, i_FFTSize);
     if strcmp(w_DistType, 'complex')
-        f_DistrPts_m			= 1/i_FFTSize .* f_DistrPts_m;
-        f_DistrPts_m			= f_DistrPts_m ./ sum(f_Win_v .^2); % remove window energy
-        f_DistrPts_m(2:end)	    = f_DistrPts_m(2:end) ./ 2;		% remove added energy from hilbert x-form?
+        f_DistrPts_m			= f_DistrPts_m;
+        f_DistrPts_m			= f_DistrPts_m ./ (sum(f_Win_v) .^2); % remove window energy
     elseif strcmp(w_DistType, 'pow') % Power distribution
-        f_DistrPts_m			= 1/i_FFTSize .* abs(f_DistrPts_m).^2;
-        f_DistrPts_m			= f_DistrPts_m ./ sum(f_Win_v .^2); %remove window energy
-        f_DistrPts_m(2:end)	    = f_DistrPts_m(2:end) ./ 2;		% remove added energy from hilbert x-form?
+        f_DistrPts_m			= abs(f_DistrPts_m).^2;
+        f_DistrPts_m			= f_DistrPts_m ./ (sum(f_Win_v) .^2); %remove window energy
     elseif strcmp(w_DistType, 'mag') % Magnitude distribution
-        f_DistrPts_m			= sqrt(1/i_FFTSize) .* abs(f_DistrPts_m);
+        f_DistrPts_m			= abs(f_DistrPts_m);
         f_DistrPts_m			= f_DistrPts_m ./ sum(abs(f_Win_v));
-        f_DistrPts_m(2:end)	    = f_DistrPts_m(2:end) ./ 2;
     elseif strcmp(w_DistType, 'mag_noscaling')
         % magnitude distribution with no scaling
         f_DistrPts_m = abs(f_DistrPts_m);
@@ -74,4 +90,4 @@ if strcmp(w_DistType,'nofft')==0
 end;
 % only keep half the spectrum
 f_DistrPts_m = f_DistrPts_m(1:floor(end/2),:);
-
+f_ENBW=sum(f_Win_v.^2)/(sum(f_Win_v).^2)*i_FFTSize;
