@@ -82,7 +82,7 @@ N				= 4*2^nextpow2(L_n);	% === large zero-padding to get better frequency resol
 
 fenetre_v		= boxcar(L_n);
 % === 2010/08/24 peeters@ircam.fr: window normalization
-fenetre_v		= 2 * fenetre_v / sum(fenetre_v);
+%fenetre_v		= 2 * fenetre_v / sum(fenetre_v);
 %[B_m, F_v, T_v] = specgram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
 [B_m, F_v, T_v] = FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
 B_m				= abs(B_m);

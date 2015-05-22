@@ -23,7 +23,7 @@ do_affiche = 0;
 i_Offset = 0;
 i_EndFrm = length(c.PartTrax_s);
 
-for (i = 2:i_EndFrm)
+for (i = 1:i_EndFrm)
 
 	% === Energy
 	f_Energy	= sum( c.f_DistrPts_m(:,i+i_Offset) );	 
@@ -55,17 +55,17 @@ for (i = 2:i_EndFrm)
 	f_TriStim_v(3,1)	= sum(c.PartTrax_s(i).f_Ampl_v([5:end]))	/ (sum(c.PartTrax_s(i).f_Ampl_v)+eps);	 
 
 	% === Build output structure
-	dFFTHarm_s.FrameErg(i-1)	= f_Energy;		 
-	dFFTHarm_s.HarmErg(i-1)		= f_HarmErg;
-	dFFTHarm_s.NoiseErg(i-1)	= f_NoiseErg;
-	dFFTHarm_s.Noisiness(i-1)	= f_Noisiness;
-	dFFTHarm_s.F0(i-1)			= c.f_F0_v(i);
-	dFFTHarm_s.InHarm(i-1)		= f_InHarm;
-	dFFTHarm_s.TriStim1(i-1)	= f_TriStim_v(1,1);
-	dFFTHarm_s.TriStim2(i-1)	= f_TriStim_v(2,1);
-	dFFTHarm_s.TriStim3(i-1)	= f_TriStim_v(3,1);
-	dFFTHarm_s.HarmDev(i-1)		= f_HarmDev;
-	dFFTHarm_s.OddEvenRatio(i-1)= f_OddEvenRatio;
+	dFFTHarm_s.FrameErg(i)	= f_Energy;		 
+	dFFTHarm_s.HarmErg(i)		= f_HarmErg;
+	dFFTHarm_s.NoiseErg(i)	= f_NoiseErg;
+	dFFTHarm_s.Noisiness(i)	= f_Noisiness;
+	dFFTHarm_s.F0(i)			= c.f_F0_v(i);
+	dFFTHarm_s.InHarm(i)		= f_InHarm;
+	dFFTHarm_s.TriStim1(i)	= f_TriStim_v(1,1);
+	dFFTHarm_s.TriStim2(i)	= f_TriStim_v(2,1);
+	dFFTHarm_s.TriStim3(i)	= f_TriStim_v(3,1);
+	dFFTHarm_s.HarmDev(i)		= f_HarmDev;
+	dFFTHarm_s.OddEvenRatio(i)= f_OddEvenRatio;
 
 	dFFTHarm_s						= FCalcDescr_common(c, i, dFFTHarm_s);
 	dFFTHarm_s.w_ErrMsg				= ' ';

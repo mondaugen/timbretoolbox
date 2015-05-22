@@ -62,7 +62,7 @@ end
 
 % === Spectral variation (Spect. Flux)
 % === Insure that prev. frame has same size as current frame by zero-padding
-f_PrevFrm_v					= c.PartTrax_s(i-1).f_Ampl_v;
+f_PrevFrm_v					= c.PartTrax_s(i).f_Ampl_v;
 f_CurFrm_v					= c.PartTrax_s(i).f_Ampl_v;
 i_Sz						= max( length(f_CurFrm_v), length(f_PrevFrm_v) );
 f_PrevFrm_v(end+1:i_Sz)		= 0;
@@ -71,11 +71,11 @@ f_CrossProd					= sum( f_PrevFrm_v(:) .* f_CurFrm_v(:) );
 f_AutoProd					= sqrt( sum( f_PrevFrm_v.^2 ) * sum( f_CurFrm_v.^2 ) );
 f_SpecVar					= 1 - f_CrossProd / (f_AutoProd+eps);
 
-desc_s.SpecCent(i-1)		= f_Centroid;
-desc_s.SpecSpread(i-1)		= f_StdDev;
-desc_s.SpecSkew(i-1)		= f_Skew;
-desc_s.SpecKurt(i-1)		= f_Kurtosis;
-desc_s.SpecSlope(i-1)		= f_Slope;
-desc_s.SpecDecr(i-1)		= f_SpecDecr;
-desc_s.SpecRollOff(i-1)		= f_SpecRollOff;
-desc_s.SpecVar(i-1)			= f_SpecVar;
+desc_s.SpecCent(i)		= f_Centroid;
+desc_s.SpecSpread(i)		= f_StdDev;
+desc_s.SpecSkew(i)		= f_Skew;
+desc_s.SpecKurt(i)		= f_Kurtosis;
+desc_s.SpecSlope(i)		= f_Slope;
+desc_s.SpecDecr(i)		= f_SpecDecr;
+desc_s.SpecRollOff(i)		= f_SpecRollOff;
+desc_s.SpecVar(i)			= f_SpecVar;

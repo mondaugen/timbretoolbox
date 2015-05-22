@@ -24,6 +24,8 @@ function [ALLDESC_s] = Gget_desc_onefile(AUDIOFILENAME, do_s, config_s)
 Snd_o	= cSound(AUDIOFILENAME);
 Snd_o	= FNormalize(Snd_o); 
 
+ALLDESC_s.DATA = struct(Snd_o);
+
 if( do_s.b_TEE )
 	% === Time-domain Representation (log attack time, envelope, etc)
 	fprintf(1, 'Descriptors based on Temporal Energy Envelope / Audio Signal\n');
