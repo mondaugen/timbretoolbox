@@ -98,27 +98,37 @@ inharmo_coef_v	= [0:0.00005:0.001];	nb_inharmo		= length(inharmo_coef_v);
 totalenergy_3m	= zeros(nb_frame, length(lag_f0_hz_v), length(inharmo_coef_v));
 stock_pos_4m	= zeros(nb_frame, length(lag_f0_hz_v), length(inharmo_coef_v), config_s.nb_harmo);
 
+% Estimate f0 at times at which spectrogram was evaluated by interpolating
+% between times when f0 was evaluated
 f0_hz_v = Fevalbp(f0_bp, T_v);
 % === candidate_f0_hz_m (nb_frame, nb_delta)
+% This is a range of frequencies around the f0 the harmonics of which are
+% searched for spectral peaks.
 candidate_f0_hz_m			= repmat(f0_hz_v(:), 1, nb_delta) + repmat(lag_f0_hz_v(:).', nb_frame, 1);
 stock_f0_m					= candidate_f0_hz_m;
 
 for num_inharmo=1:nb_inharmo
 	inharmo_coef = inharmo_coef_v(num_inharmo);
+    % Calculate the harmonic numbers. These will be non-integer valued when the
+    % inharmonicity coefficient is non-zero.
 	nnum_harmo_v = [1:config_s.nb_harmo] .* sqrt( 1 + inharmo_coef * ([1:config_s.nb_harmo]).^2);
 
 	for num_delta = 1:nb_delta
 		% === candidate_f0_hz_v (nb_frame, 1)
+        % The current fundamentals out of the range of fundamentals whose
+        % harmonics we are checking in the spectrogram
 		candidate_f0_hz_v		= candidate_f0_hz_m(:,num_delta);
 		% === candidate_f0_hz_m (nb_frame, nb_harmo): (nb_frame,1)*(1,nb_harmo)
+        % The current harmonics that we are checking in the spectrogram
 		candidate_harmo_hz_m	= candidate_f0_hz_v(:) * nnum_harmo_v(:).';
 		% === candidate_f0_hz_m (nb_frame, nb_harmo)
+        % The spectrogram bins closest to the harmonics that we are checking in
+        % the spectrogram
 		candidate_harmo_pos_m	= round(candidate_harmo_hz_m/sr_hz*N)+1;
 
 		stock_pos_4m(:,num_delta,num_inharmo,:)		= candidate_harmo_pos_m;
 		for num_frame=1:nb_frame
-            B_m_num_rows__ = size(B_m);
-            B_m_num_rows__ = B_m_num_rows__(1);
+            B_m_num_rows__ = size(B_m,1);
             % make sure all the indices are within the range of valid
             % indices for B_m's rows.
             valid_indices__ = candidate_harmo_pos_m(num_frame,:);
@@ -142,12 +152,16 @@ for num_inharmo=1:nb_inharmo
 	end, % === for num_delta
 end, % === num_inharmo
 
+% It seems the optimal harmonicity coefficient is chosen for the entire
+% soundfile analysed.
 % === choix du coefficient d'inharmonicite
 for num_inharmo=1:nb_inharmo
 	% === sum à travers les trames (max à chaque trame à travers les delta pour inharmo fixé)
 	score_v(num_inharmo) = sum(max(squeeze(totalenergy_3m(:,:,num_inharmo))));
 end
 
+% If the maximum score is within 1% of the first score, just choose the first
+% score. That is, just choose the inharmonicity coefficient at index 1.
 [max_value, max_pos]	= max(score_v);
 calcul = (score_v(max_pos)-score_v(1))/score_v(1);
 if calcul>0.01,		num_inharmo = max_pos;
@@ -156,8 +170,14 @@ end
 totalenergy_2m		= squeeze(totalenergy_3m(:,:,num_inharmo));
 
 for num_frame=1:nb_frame
+    % Find the offset from f0 that gives the maximum and store its index and the
+    % maximum
 	[max_value, num_delta]			= max(totalenergy_2m(num_frame,:));
+    % Look up what frequency this is
 	f0_hz_v(num_frame)				= stock_f0_m(num_frame,num_delta);
+    % No interpolation is performed to determine the frequency or amplitude of
+    % the partial! These results could be very erroneous, especially in the case
+    % of the amplitude.
 	PartTrax_s(num_frame).f_Freq_v	= squeeze( F_v(stock_pos_4m(num_frame,num_delta,num_inharmo,:)) );
 	PartTrax_s(num_frame).f_Ampl_v	= B_m(stock_pos_4m(num_frame,num_delta,num_inharmo,:), num_frame);
 end

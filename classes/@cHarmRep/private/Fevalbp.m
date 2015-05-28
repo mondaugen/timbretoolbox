@@ -2,7 +2,10 @@
 %
 % DESCRIPTION:
 % ============
-% 
+% From a set of time-pitch pairs in bp, estimate pitches at the times in x_v via
+% linear interpolation. If x_v contains times greater than or less than all the
+% times in bp for which there are pitches, these pitches are set to the last and
+% first pitches in bp, respectively. 
 %
 % INPUTS:
 % =======
@@ -60,8 +63,8 @@ if length(x_v(pos)) > 1,
 	y_v(pos,1) = interp1(bp(:,1), bp(:,2), x_v(pos));
 else
 
-    % Vector of length equal to the number of times at which the spectrogram was
-    % computed
+    % Vector of length equal to the number of times at which we would like to
+    % have values
 	y_v = zeros(length(x_v), 1);
 
 	for n = 1:length(x_v)
