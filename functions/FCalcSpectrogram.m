@@ -1,14 +1,15 @@
 function [f_DistrPts_m,f_SupY_v,f_SupX_v,f_ENBW] = FCalcSpectrogram(f_Sig_v, ...
     i_FFTSize, sr_hz, f_Win_v, i_Overlap, w_DistType)
 % FCALCSPECTROGRAM - Calculates the spectrogram of a signal
-% f_Sig_v   - The signal to compute a spectrogram of.
-% i_FFTSize - The length of the FFT.
-% sr_hz     - The sampling rate of the signal
-% f_Win_v - The window used to do the windowing. This is a vector representing
-%             a window!
-% i_Overlap - The number of samples of overlap. Stated this way to be compatible
-%             with "specgram". To get the the overlap from the hop size, do:
-%             i_Overlap = length(f_Win_v) - i_HopSize.
+% f_Sig_v    - The signal to compute a spectrogram of.
+% i_FFTSize  - The length of the FFT.
+% sr_hz      - The sampling rate of the signal
+% f_Win_v    - The window used to do the windowing. This is a vector representing
+%              a window!
+% i_Overlap  - The number of samples of overlap. Stated this way to be compatible
+%              with "specgram". To get the the overlap from the hop size, do:
+%              i_Overlap = length(f_Win_v) - i_HopSize.
+% w_DistType - The kind of distribution produced. See below for the kinds.
 % 
 % Returns 
 % f_DistrPts_m - the distribution points (not a valid probability distribution!)

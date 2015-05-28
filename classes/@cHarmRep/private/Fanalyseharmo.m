@@ -45,7 +45,7 @@ if do_affiche==3
 end
 
 % ==========================================================
-% === We consider only harmonic sounds -> if the sounds is not harmonic then we do not analyse it
+% === We consider only harmonic sounds -> if the sound is not harmonic then we do not analyse it
 if max(s_v)>config_s.threshold_harmo,	f0_bp(:,1) = t_v; f0_bp(:,2) = p_v;
 else									f0_bp = [];
 end
