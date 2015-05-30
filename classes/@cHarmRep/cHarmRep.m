@@ -25,7 +25,8 @@ c.f_Sig_v	= FGetSignal(Snd_o);
 c.sr_hz		= FGetSampRate(Snd_o);
 c.config_s	= config_s;
 
-[c.f_F0_v, c.PartTrax_s, c.f_SupX_v, c.f_SupY_v, c.f_DistrPts_m] = Fanalyseharmo(c.f_Sig_v, c.sr_hz, c.config_s);
+[c.f_F0_v, c.PartTrax_s, c.f_SupX_v, c.f_SupY_v, c.f_DistrPts_m] ...
+    = Fanalyseharmo(c.f_Sig_v, c.sr_hz, c.config_s);
 
 
 % === Build class

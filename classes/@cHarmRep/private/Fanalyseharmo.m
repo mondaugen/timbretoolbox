@@ -78,12 +78,15 @@ end;
 
 L_n				= round(L_sec*sr_hz);
 STEP_n			= round(STEP_sec*sr_hz);
-N				= 4*2^nextpow2(L_n);	% === large zero-padding to get better frequency resolution
+if (~isfield(config_s,'i_FFTSize')),
+    N			= 4*2^nextpow2(L_n);	% === large zero-padding to get better frequency resolution
+else
+    N           = config_s.i_FFTSize;
+end;
 
 fenetre_v		= boxcar(L_n);
-% === 2010/08/24 peeters@ircam.fr: window normalization
-%fenetre_v		= 2 * fenetre_v / sum(fenetre_v);
-%[B_m, F_v, T_v] = specgram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
+% make signal analytic before doing spectral analysis
+f_Sig_v         = hilbert(f_Sig_v);
 [B_m, F_v, T_v] = FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
 B_m				= abs(B_m);
 T_v				= T_v+L_sec/2;
@@ -168,6 +171,8 @@ if calcul>0.01,		num_inharmo = max_pos;
 else				num_inharmo = 1;
 end
 totalenergy_2m		= squeeze(totalenergy_3m(:,:,num_inharmo));
+%disp('Inharmonicity coefficient');
+%f_InharmoCoeff      = inharmo_coef_v(num_inharmo);
 
 for num_frame=1:nb_frame
     % Find the offset from f0 that gives the maximum and store its index and the

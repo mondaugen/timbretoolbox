@@ -30,6 +30,9 @@ if (nargin == 5),
     w_DistType='mag';
 end;
 i_WinSize = length(f_Win_v);
+if (i_Overlap >= i_WinSize),
+    error('Overlap greater than or equal to window size.');
+end;
 i_HopSize = i_WinSize - i_Overlap;
 f_SampRateX = sr_hz / i_HopSize;
 

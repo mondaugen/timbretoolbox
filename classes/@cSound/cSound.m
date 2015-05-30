@@ -39,6 +39,13 @@ switch nargin
 		% === Configs
 		s_Config = varargin{2};
 
+        if ~isfield(s_Config,'f_HopSize_sec'),
+            s_Config.f_HopSize_sec	= 128/44100;		% === is 0.0029s at 44100Hz
+        end;
+        if ~isfield(s_Config,'f_WinLen_sec'),
+            s_Config.f_WinLen_sec	= 1024/44100;		% === is 0.0232s at 44100Hz
+        end;
+
 	otherwise
 		return;
 end;
@@ -56,6 +63,18 @@ switch c.w_FileType
 		[c.f_Sig_v, c.f_Fs, c.i_Bits]	= allread(c.w_FileName);
 		c.f_Sig_v						= mean(c.f_Sig_v, 2);    % === for stereo signal
         c.f_Sig_v						= c.f_Sig_v / 2^c.iBits; % === NEW GFP 2011/07/07
+    case 'raw',
+        if (~isfield(s_Config,'w_Format') | ~isfield(s_Config,'i_Channels') ...
+             | ~isfield(s_Config,'f_Fs')),
+            error(['Need to specificy format, number of channels and sample rate for' ...
+            ' files of type "raw".']);
+        end;
+        f=fopen(c.w_FileName,'r');
+        data=fread(f,Inf,s_Config.w_Format);
+        % Only read in the first channel
+        c.f_Sig_v = data(1:s_Config.i_Channels:end);
+        fclose(f);
+        c.f_Fs = s_Config.f_Fs;
 	otherwise,		error('Unsupported file type');
 end;
 
