@@ -22,7 +22,7 @@ function [ALLDESC_s] = Gget_desc_onefile(AUDIOFILENAME, do_s, config_s)
 
 % === Read input file
 Snd_o	= cSound(AUDIOFILENAME,config_s.SOUND);
-Snd_o	= FNormalize(Snd_o); 
+%Snd_o	= FNormalize(Snd_o); 
 
 ALLDESC_s.DATA = struct(Snd_o);
 

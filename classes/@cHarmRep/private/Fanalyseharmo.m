@@ -105,7 +105,7 @@ stock_pos_4m	= zeros(nb_frame, length(lag_f0_hz_v), length(inharmo_coef_v), conf
 % between times when f0 was evaluated
 f0_hz_v = Fevalbp(f0_bp, T_v);
 % === candidate_f0_hz_m (nb_frame, nb_delta)
-% This is a range of frequencies around the f0 the harmonics of which are
+% This is a range of frequencies around f0 the harmonics of which are
 % searched for spectral peaks.
 candidate_f0_hz_m			= repmat(f0_hz_v(:), 1, nb_delta) + repmat(lag_f0_hz_v(:).', nb_frame, 1);
 stock_f0_m					= candidate_f0_hz_m;

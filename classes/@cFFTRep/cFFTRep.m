@@ -168,7 +168,7 @@ switch nargin
         if ~isfield( config_s, 'w_DistType')		config_s.w_DistType	= 'pow'; end;  
                 
     otherwise
-        disp('Error: bad set of arguements to cFFTRep');
+        disp('Error: bad set of arguments to cFFTRep');
         %c = cFFTRep(zeros(1,10));
         exit(1);
 end;
@@ -202,8 +202,8 @@ d.f_SampRateY = config_s.f_SampRateY;
 % === get input sig. (make analytic)
 f_Sig_v = FGetSignal(oSnd);
 if isreal(f_Sig_v), f_Sig_v = hilbert(f_Sig_v); end
-
-[d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v] = FCalcSpectrogram(f_Sig_v, ...
+ 
+[d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, d.f_ENBW] = FCalcSpectrogram(f_Sig_v, ...
     c.i_FFTSize, config_s.f_sr_hz, c.f_Win_v, c.i_WinSize - c.i_HopSize, ...
     config_s.w_DistType);
 

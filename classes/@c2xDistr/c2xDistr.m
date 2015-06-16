@@ -27,6 +27,7 @@ switch nargin
         c.f_SampRateX	= 0;								% sampling rate on x-dim (hop rate)
         c.f_SampRateY	= 0;								% sampling rate on y-dim (fft rate)
         c.f_DistrPts_m	= zeros( c.i_SizeY, c.i_SizeX );	% distr points
+        c.f_ENBW        = 0;
     case 1
         d = varargin{1};
         % add checks for compatibility of args here
@@ -37,6 +38,11 @@ switch nargin
         c.f_SampRateX	= d.f_SampRateX;
         c.f_SampRateY	= d.f_SampRateY;
         c.f_DistrPts_m	= d.f_DistrPts_m;
+        if (isfield(d,'f_ENBW')),
+            c.f_ENBW = d.f_ENBW;
+        else,
+            c.f_ENBW        = 0;
+        end;
     otherwise
         error('Incorrect arg. to C2xDistr class constructor');
 end;

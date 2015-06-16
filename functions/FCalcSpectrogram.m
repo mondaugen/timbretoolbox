@@ -78,7 +78,7 @@ if strcmp(w_DistType,'nofft')==0
     f_DistrPts_m = fft(f_DistrPts_m, i_FFTSize);
     if strcmp(w_DistType, 'complex')
         f_DistrPts_m			= f_DistrPts_m;
-        f_DistrPts_m			= f_DistrPts_m ./ (sum(f_Win_v) .^2); % remove window energy
+        f_DistrPts_m			= f_DistrPts_m ./ (sum(f_Win_v)); % remove window energy
     elseif strcmp(w_DistType, 'pow') % Power distribution
         f_DistrPts_m			= abs(f_DistrPts_m).^2;
         f_DistrPts_m			= f_DistrPts_m ./ (sum(f_Win_v) .^2); %remove window energy
