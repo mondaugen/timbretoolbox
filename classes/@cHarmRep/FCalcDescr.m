@@ -27,8 +27,16 @@ for (i = 1:i_EndFrm)
 
 	% === Energy
 	f_Energy	= sum( c.f_DistrPts_m(:,i+i_Offset) );	 
+    % Calculate power from distribution points assuming it is magnitude spectrum
+    f_Pow     = sum( c.f_DistrPts_m(:,i+i_Offset).^2 ) ./ c.f_ENBW;
 	f_HarmErg	= sum( c.PartTrax_s(i).f_Ampl_v .^2 );		 
+    % The "harmonic energy" is the same as the harmonic power
+    f_HarmPow   = sum( c.PartTrax_s(i).f_Ampl_v .^2 );
 	f_NoiseErg	= f_Energy - f_HarmErg;					 
+    % Because the analytic signal is used when calculating the spectrogram, the
+    % power of the noise in the signal has been doubled. We divide by two to get
+    % the true estimate.
+    f_NoisePow  = (f_Pow - f_HarmPow)/2;
 
 	% === Noisiness
 	f_Noisiness	= f_NoiseErg ./ (f_Energy+eps);			 
@@ -66,6 +74,9 @@ for (i = 1:i_EndFrm)
 	dFFTHarm_s.TriStim3(i)	= f_TriStim_v(3,1);
 	dFFTHarm_s.HarmDev(i)		= f_HarmDev;
 	dFFTHarm_s.OddEvenRatio(i)= f_OddEvenRatio;
+    dFFTHarm_s.f_Pow(i) = f_Pow;
+    dFFTHarm_s.f_HarmPow(i) = f_HarmPow;
+    dFFTHarm_s.f_NoisePow(i) = f_NoisePow;
 
 	dFFTHarm_s						= FCalcDescr_common(c, i, dFFTHarm_s);
 	dFFTHarm_s.w_ErrMsg				= ' ';

@@ -1,4 +1,4 @@
-% function [f0_hz_v, PartTrax_s, f_SuxX_v, f_SupY_v, f_DistrPts_m] = Fanalyseharmo(f_Sig_v, sr_hz, config_s)
+% function [f0_hz_v, PartTrax_s, f_SuxX_v, f_SupY_v, f_DistrPts_m, f_ENBW] = Fanalyseharmo(f_Sig_v, sr_hz, config_s)
 %
 % DESCRIPTION:
 % ============
@@ -19,14 +19,18 @@
 % - f_SupX_v
 % - f_SupY_v
 % - f_DistrPts_m(N/2+1, nb_frame)							: spectrogram in power amplitude
+% - f_ENBW                                                  : equivalent noise
+%                                                             bandwidth of
+%                                                             spectrogram
+%                                                             analysis window
 %
 % Copyright (c) 2011 IRCAM/McGill, All Rights Reserved.
 % Permission is only granted to use for research purposes
 %
 
 
-function [f0_hz_v, PartTrax_s, f_SupX_v, f_SupY_v, f_DistrPts_m] = Fanalyseharmo(f_Sig_v, sr_hz, config_s)
-
+function [f0_hz_v, PartTrax_s, f_SupX_v, f_SupY_v, f_DistrPts_m, f_ENBW] = ...
+    Fanalyseharmo(f_Sig_v, sr_hz, config_s)
 
 do_affiche				= 0;
 
@@ -57,6 +61,7 @@ if size(f0_bp, 1)==0
 	f_SupX_v		= [];
 	f_SupY_v		= [];
 	f_DistrPts_m	= [];
+    f_ENBW          = [];
 	return;
 end
 
@@ -83,11 +88,12 @@ if (~isfield(config_s,'i_FFTSize')),
 else
     N           = config_s.i_FFTSize;
 end;
+N
 
 fenetre_v		= boxcar(L_n);
 % make signal analytic before doing spectral analysis
 f_Sig_v         = hilbert(f_Sig_v);
-[B_m, F_v, T_v] = FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
+[B_m, F_v, T_v, f_ENBW] = FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
 B_m				= abs(B_m);
 T_v				= T_v+L_sec/2;
 
