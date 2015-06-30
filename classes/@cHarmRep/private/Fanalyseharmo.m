@@ -88,9 +88,24 @@ if (~isfield(config_s,'i_FFTSize')),
 else
     N           = config_s.i_FFTSize;
 end;
-N
 
-fenetre_v		= boxcar(L_n);
+% If window defined in configure structure, use it, otherwise just use a boxcar
+% window.
+if ~isfield(config_s, 'f_Win_v'),
+    fenetre_v	= boxcar(L_n);
+else
+    if (length(config_s.f_Win_v) ~= L_n),
+        error(['Analysis window (config_s.f_Win_v) length does not equal ' ...
+               'specified window length (config_s.f_WinSize_sec). Note ' ...
+               'that the length of the window is specified in seconds so ' ...
+               'this means length(config_s.f_Win_v) must equal ' ...
+               'config_s.f_WinSize_sec ' ...
+               '* Fs where Fs is the sampling rate of the sound being ' ...
+               'analysed.']);
+    end;
+    fenetre_v   = config_s.f_Win_v;
+end;
+
 % make signal analytic before doing spectral analysis
 f_Sig_v         = hilbert(f_Sig_v);
 [B_m, F_v, T_v, f_ENBW] = FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
