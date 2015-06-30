@@ -22,6 +22,10 @@
 
 function [dTEE_s, dAS_s] = FCalcDescr(c, config_s)
 
+if ~isfield(config_s,'xcorr_nb_coeff'),
+    config_s.xcorr_nb_coeff = 12;
+end;
+
 do_affiche = 0;
 
 % === Duration

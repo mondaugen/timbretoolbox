@@ -32,6 +32,16 @@
 function [f0_hz_v, PartTrax_s, f_SupX_v, f_SupY_v, f_DistrPts_m, f_ENBW] = ...
     Fanalyseharmo(f_Sig_v, sr_hz, config_s)
 
+% Supply defaults if not specified
+
+if ~isfield(config_s,'threshold_harmo'),
+    config_s.threshold_harmo = 0.3;
+end;
+
+if ~isfield(config_s,'nb_harmo'),
+    config_s.nb_harmo = 20;
+end;
+
 do_affiche				= 0;
 
 
@@ -87,6 +97,15 @@ if (~isfield(config_s,'i_FFTSize')),
     N			= 4*2^nextpow2(L_n);	% === large zero-padding to get better frequency resolution
 else
     N           = config_s.i_FFTSize;
+end;
+
+% If window type is specified, synthesize the window and place it in the
+% config_s.f_Win_v field.
+% Note that if both a window type and a window vector are specified, the window
+% type will overwrite the window vector and this new window vector will be used
+% in place of the original window vector.
+if isfield(config_s,'w_WinType'),
+    config_s.f_Win_v = eval(sprintf('%s(%d)',config_s.w_WinType,L_n));
 end;
 
 % If window defined in configure structure, use it, otherwise just use a boxcar

@@ -47,10 +47,15 @@ do_s.b_STFTpow			= 1;    % descriptors from the STFT power
 do_s.b_Harmonic			= 1;	% descriptors from Harmonic Sinusoidal Modeling representation
 do_s.b_ERBfft			= 1;    % descriptors from ERB representation (ERB being computed using FFT)
 do_s.b_ERBgam			= 1;    % descriptors from ERB representation (ERB being computed using Gamma Tone Filter)
-config_s.xcorr_nb_coeff = 12;	% === defines the number of auto-correlation coefficients that will be sued
-config_s.threshold_harmo= 0.3;	% === defines the threshold [0,1] below which harmonic-features are not computed
-config_s.nb_harmo		= 20;	% === defines the number of harmonics that will be extracted
-% ====================
+
+% Time domain descriptors configuration
+% === defines the number of auto-correlation coefficients that will be used
+config_s.TEE.xcorr_nb_coeff = 12; 
+% Harmonic descriptors configuration
+% === defines the threshold [0,1] below which harmonic-features are not computed
+config_s.Harmonic.threshold_harmo = 0.3;
+% === defines the number of harmonics that will be extracted
+config_s.Harmonic.nb_harmo = 20;
 
 % ====================
 % === Get list of input files
