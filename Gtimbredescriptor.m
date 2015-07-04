@@ -48,15 +48,6 @@ do_s.b_Harmonic			= 1;	% descriptors from Harmonic Sinusoidal Modeling represent
 do_s.b_ERBfft			= 1;    % descriptors from ERB representation (ERB being computed using FFT)
 do_s.b_ERBgam			= 1;    % descriptors from ERB representation (ERB being computed using Gamma Tone Filter)
 
-% Time domain descriptors configuration
-% === defines the number of auto-correlation coefficients that will be used
-config_s.TEE.xcorr_nb_coeff = 12; 
-% Harmonic descriptors configuration
-% === defines the threshold [0,1] below which harmonic-features are not computed
-config_s.Harmonic.threshold_harmo = 0.3;
-% === defines the number of harmonics that will be extracted
-config_s.Harmonic.nb_harmo = 20;
-
 % ====================
 % === Get list of input files
 [FILE_s]	= Gget_filelist(w_Directory, EXT);
