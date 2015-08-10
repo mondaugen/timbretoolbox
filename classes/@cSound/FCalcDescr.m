@@ -28,11 +28,8 @@ end;
 
 do_affiche = 0;
 
-% === Duration
+% === Duration: This is actually the time of the beginning of the last sample.
 f_Dur			= (c.i_Len-1)/c.f_Fs; % (s)
-
-
-
 
 % === Calculate signal envelope (const taken from IRCAM toolbox)
 [f_Energy_v]	= FCalcEnv(c.f_Sig_v, c.f_Fs, 5);
@@ -49,13 +46,12 @@ f_EffDur	= FCalcEffectiveDur(f_Energy_v, 0.4) ./ c.f_Fs;	% effective duration (i
 % === Energy modulation (tremolo)
 [f_FreqMod, f_AmpMod] = FCalcModulation(f_Energy_v, f_ADSR_v, c.f_Fs); % === GFP 2010/11/16
 
-
-
-
-
 % === Instantaneous temporal features
 count = 0;
-for n = 1 : c.i_HopSize : (c.i_Len - c.i_WinLen)
+dAS_f_SupX_v_count = 0;
+dAS_f_SupX_v = zeros(1,floor((c.i_Len - c.i_WinLen)/c.i_HopSize)+1);
+for n = (1 + c.i_HopSize*(0 : floor((c.i_Len - c.i_WinLen)/c.i_HopSize))),
+%for n = 1 : c.i_HopSize : (c.i_Len - c.i_WinLen)
 	f_Frm_v					= c.f_Sig_v( n + [0:c.i_WinLen-1]) .* c.f_Win_v;
 
 	count = count+1;
@@ -68,7 +64,8 @@ for n = 1 : c.i_HopSize : (c.i_Len - c.i_WinLen)
 	i_Zcr_v				= find( diff(i_Sign_v) );
 	i_NumZcr			= length(i_Zcr_v);
 	f_ZcrRate_v(count)	= i_NumZcr ./ (length(f_Frm_v) / c.f_Fs); % zero crossing rate
-
+    dAS_f_SupX_v(count) = dAS_f_SupX_v_count;
+    dAS_f_SupX_v_count  = dAS_f_SupX_v_count + c.i_HopSize/c.f_Fs;
 end
 
 
@@ -89,11 +86,19 @@ dTEE_s.EffDur		= f_EffDur;				% === effective duration
 dTEE_s.FreqMod		= f_FreqMod;			% === energy modulation frequency
 dTEE_s.AmpMod		= f_AmpMod;				% === energy modulation amplitude
 dTEE_s.RMSEnv		= f_Energy_v(:).';		% === GFP 2010/11/16
+% The support vector for the RMSEnv goes from 0 to the time of the last sample
+% in seconds, incremented by the sample period.
+dTEE_s.f_SupX_v     = (0:(c.i_Len-1))/c.f_Fs;
 %dTEE_s.ADSR_v		= f_ADSR_v([1 2 5]);	% === attack-decay-sustain-release envelope
 for num_dim=1:size(f_AutoCoeffs_v,1)
 dAS_s.(sprintf('AutoCorr%d',num_dim)) = f_AutoCoeffs_v(num_dim,:);	% === autocorrelation
 end
 dAS_s.ZcrRate		= f_ZcrRate_v;		% === zero crossing rate
+% The support vector for the autocorrelation values and zero crossing rate goes
+% from 0 to the time floor((c.i_Len - c.i_WinLen)/c.i_HopSize)*c.i_HopSize/c.f_Fs
+% incremented by c.i_HopSize/c.f_Fs
+% 
+dAS_s.f_SupX_v      = dAS_f_SupX_v;
 
 
 % +++++++++++++++++++++++++++++++++++++

@@ -111,6 +111,7 @@ desc_s.FrameErg		= f_Energy_v;			% frame energy
 
 desc_s.SpecFlat		= f_SpecFlat_v;			% spectral flatness
 desc_s.SpecCrest	= f_SpecCrest_v;		% spectral crest
+desc_s.f_SupX_v     = c.f_SupX_v;           % time points
 
 % ++++++++++++++++++++++++++++++++++
 if do_affiche
@@ -124,3 +125,4 @@ if do_affiche
 end
 % ++++++++++++++++++++++++++++++++++
 
+help setfº

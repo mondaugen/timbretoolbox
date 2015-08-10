@@ -95,7 +95,7 @@ for (i = 1:i_EndFrm)
 
 end
 
-
+dFFTHarm_s.f_SupX_v = c.f_SupX_v; % time points
 
 if i_EndFrm==0
 	dFFTHarm_s = [];

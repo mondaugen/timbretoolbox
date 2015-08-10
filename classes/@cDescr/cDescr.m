@@ -13,15 +13,7 @@
 % Permission is only granted to use for research purposes
 %
 
-function d = cDescr(varargin)
-
-switch nargin
-    case 0
-        % make empty object
-    case 1
-        % copy to new object
-        c = varargin{1};
-    otherwise
-        % error
-end;
+function d = cDescr(c)
+% 
+% 
 d = class(c, 'cDescr');

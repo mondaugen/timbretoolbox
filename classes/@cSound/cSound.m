@@ -57,7 +57,12 @@ c.w_FileType	= c.w_FileName(pos_v(end)+1:end);
 % === Read file
 switch c.w_FileType
 	case 'wav',         
-		[c.f_Sig_v, c.f_Fs, c.i_Bits]	= wavread(c.w_FileName);
+        if isfield(s_Config,'i_SampleRange_v'),
+            [c.f_Sig_v, c.f_Fs, c.i_Bits] = ...
+                wavread(c.w_FileName,s_Config.i_SampleRange_v);
+        else
+		    [c.f_Sig_v, c.f_Fs, c.i_Bits] = wavread(c.w_FileName);
+        end;
 		c.f_Sig_v						= mean(c.f_Sig_v, 2);   % === for stereo signal
 	case 'aiff',        
 		[c.f_Sig_v, c.f_Fs, c.i_Bits]	= allread(c.w_FileName);
