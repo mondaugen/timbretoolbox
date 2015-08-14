@@ -29,8 +29,8 @@
 %
 
 
-function [f0_hz_v, PartTrax_s, f_SupX_v, f_SupY_v, f_DistrPts_m, f_ENBW] = ...
-    Fanalyseharmo(f_Sig_v, sr_hz, config_s)
+function [f0_hz_v, PartTrax_s, f_SupX_v, f_SupY_v, f_DistrPts_m, f_ENBW, ...
+    f_SampRateX, f_SampRateY, config_s] = Fanalyseharmo(f_Sig_v, sr_hz, config_s)
 
 % Supply defaults if not specified
 
@@ -58,22 +58,6 @@ if do_affiche==3
 	Fpause
 end
 
-% ==========================================================
-% === We consider only harmonic sounds -> if the sound is not harmonic then we do not analyse it
-if max(s_v)>config_s.threshold_harmo,	f0_bp(:,1) = t_v; f0_bp(:,2) = p_v;
-else									f0_bp = [];
-end
-
-if size(f0_bp, 1)==0
-	f0_hz_v			= [];
-	PartTrax_s		= [];
-	% === v1.5 (2012/02): added f_SupX_v and f_SupY_v in the wrong case
-	f_SupX_v		= [];
-	f_SupY_v		= [];
-	f_DistrPts_m	= [];
-    f_ENBW          = [];
-	return;
-end
 
 % ==========================================================
 % === Compute sinusoidal harmonic parameters
@@ -83,21 +67,27 @@ if isfield(config_s,'f_WinSize_sec'),
     L_sec       = config_s.f_WinSize_sec;
 else,
     L_sec		= 0.1; % === analysis window length
+    config_s.f_WinSize_sec=L_sec;
 end
 
 if isfield(config_s,'f_HopSize_sec'),
     STEP_sec	= config_s.f_HopSize_sec;
 else,
     STEP_sec	= L_sec/4; % === hop size
+    config_s.f_HopSize_sec=STEP_sec;
 end;
+f_SampRateX=1/STEP_sec;
 
 L_n				= round(L_sec*sr_hz);
 STEP_n			= round(STEP_sec*sr_hz);
 if (~isfield(config_s,'i_FFTSize')),
     N			= 4*2^nextpow2(L_n);	% === large zero-padding to get better frequency resolution
+    config_s.i_FFTSize=N;
 else
     N           = config_s.i_FFTSize;
 end;
+% This is more like 1/(bin_bandwidth) but is done this way to match cFFTRep
+f_SampRateY=N/sr_hz;
 
 % If window type is specified, synthesize the window and place it in the
 % config_s.f_Win_v field.
@@ -106,12 +96,17 @@ end;
 % in place of the original window vector.
 if isfield(config_s,'w_WinType'),
     config_s.f_Win_v = eval(sprintf('%s(%d)',config_s.w_WinType,L_n));
+else
+    config_s.w_WinType='custom';
 end;
 
 % If window defined in configure structure, use it, otherwise just use a boxcar
-% window.
+% window. If no window type was specified, w_WinType is currently 'custom'. If
+% no window vector is specified, one is created (from a boxcar window) and
+% w_WinType is given the value 'boxcar'. If not, it keeps the name 'custom'.
 if ~isfield(config_s, 'f_Win_v'),
     fenetre_v	= boxcar(L_n);
+    config_s.w_WinType='boxcar';
 else
     if (length(config_s.f_Win_v) ~= L_n),
         error(['Analysis window (config_s.f_Win_v) length does not equal ' ...
@@ -140,6 +135,22 @@ lag_f0_hz_v		= [-5:0.1:5];			nb_delta		= length(lag_f0_hz_v);
 inharmo_coef_v	= [0:0.00005:0.001];	nb_inharmo		= length(inharmo_coef_v);
 totalenergy_3m	= zeros(nb_frame, length(lag_f0_hz_v), length(inharmo_coef_v));
 stock_pos_4m	= zeros(nb_frame, length(lag_f0_hz_v), length(inharmo_coef_v), config_s.nb_harmo);
+
+% ==========================================================
+% === We consider only harmonic sounds -> if the sound is not harmonic then we do not analyse it
+if max(s_v)>config_s.threshold_harmo,	f0_bp(:,1) = t_v; f0_bp(:,2) = p_v;
+else									f0_bp = [];
+end
+
+if size(f0_bp, 1)==0
+    % If sound not harmonic, we just fill in with 0s as fundamental estimate,
+    % otherwise this will cause there to be misalignment if the sound
+    % analysed is a chunk of a whole sound.
+	f0_hz_v			= zeros(1,nb_frame);
+	PartTrax_s(1:nb_frame).f_Freq_v	= 0;
+	PartTrax_s(1:nb_frame).f_Ampl_v	= 0;
+	return;
+end
 
 % Estimate f0 at times at which spectrogram was evaluated by interpolating
 % between times when f0 was evaluated
@@ -258,3 +269,6 @@ if do_affiche
 end
 % ++++++++++++++++++++++++++++++
 
+% Transpose f0_hz_v vector to make it consistent with the others in timbre
+% toolbox.
+f0_hz_v=f0_hz_v.';

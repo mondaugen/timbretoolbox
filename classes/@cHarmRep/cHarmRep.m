@@ -56,13 +56,15 @@ function [c] = cHarmRep(Snd_o, config_s)
 
 
 % === get input sig. 
-c.f_Sig_v	= FGetSignal(Snd_o);
-c.sr_hz		= FGetSampRate(Snd_o);
 c.config_s	= config_s;
 
-[c.f_F0_v, c.PartTrax_s, c.f_SupX_v, c.f_SupY_v, c.f_DistrPts_m, c.f_ENBW] ...
-    = Fanalyseharmo(c.f_Sig_v, c.sr_hz, c.config_s);
+[c.f_F0_v, c.PartTrax_s, d.f_SupX_v, d.f_SupY_v, d.f_DistrPts_m, d.f_ENBW, ...
+    d.f_SampRateX, d.f_SampRateY, c.config_s] = ...
+    Fanalyseharmo(FGetSignal(Snd_o), FGetSampRate(Snd_o), c.config_s);
 
+% c2xDistr fields
+d.i_SizeX=size(d.f_DistrPts_m,2);
+d.i_SizeY=size(d.f_DistrPts_m,1);
 
 % === Build class
-c = class(c, 'cHarmRep'); % inherit generic distribution properties
+c = class(c,'cHarmRep',c2xDistr(d)); % inherit generic distribution properties

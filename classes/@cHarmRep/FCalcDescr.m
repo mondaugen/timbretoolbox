@@ -22,13 +22,15 @@ do_affiche = 0;
 
 i_Offset = 0;
 i_EndFrm = length(c.PartTrax_s);
+f_DistrPts_m=FGetDistr(c);
+f_ENBW=FGetENBW(c);
 
 for (i = 1:i_EndFrm)
 
 	% === Energy
-	f_Energy	= sum( c.f_DistrPts_m(:,i+i_Offset) );	 
+	f_Energy	= sum( f_DistrPts_m(:,i+i_Offset) );	 
     % Calculate power from distribution points assuming it is magnitude spectrum
-    f_Pow     = sum( c.f_DistrPts_m(:,i+i_Offset).^2 ) ./ c.f_ENBW;
+    f_Pow     = sum( f_DistrPts_m(:,i+i_Offset).^2 ) ./ f_ENBW;
 	f_HarmErg	= sum( c.PartTrax_s(i).f_Ampl_v .^2 );		 
     % The "harmonic energy" is the same as the harmonic power
     f_HarmPow   = sum( c.PartTrax_s(i).f_Ampl_v .^2 );
@@ -82,20 +84,18 @@ for (i = 1:i_EndFrm)
 	dFFTHarm_s.w_ErrMsg				= ' ';
 
 	% +++++++++++++++++++++++++++++++++
-	if do_affiche
-		clf,
-		subplot(221), imagesc(c.f_SupX_v, c.f_SupY_v, c.f_DistrPts_m), 
-		a=colormap('gray'); colormap(1-a); axis xy;  
-		subplot(223), plot(c.f_SupY_v, c.f_DistrPts_m);   
-		ALLDESC_s.dFFTHarm_s=dFFTHarm_s; 
-		Gget_temporalmodeling_onefile(ALLDESC_s, 1);
-		Fpause
-	end
+	%if do_affiche
+	%	clf,
+	%	subplot(221), imagesc(c.f_SupX_v, c.f_SupY_v, f_DistrPts_m), 
+	%	a=colormap('gray'); colormap(1-a); axis xy;  
+	%	subplot(223), plot(c.f_SupY_v, f_DistrPts_m);   
+	%	ALLDESC_s.dFFTHarm_s=dFFTHarm_s; 
+	%	Gget_temporalmodeling_onefile(ALLDESC_s, 1);
+	%	Fpause
+	%end
 	% +++++++++++++++++++++++++++++++++
 
 end
-
-dFFTHarm_s.f_SupX_v = c.f_SupX_v; % time points
 
 if i_EndFrm==0
 	dFFTHarm_s = [];
@@ -110,4 +110,5 @@ if isempty(c.PartTrax_s)
 	dFFTHarm_s.w_ErrMsg				= ' ';
 end
 
-
+% Descriptor's classes require f_SupX_v
+[f_SupY_v,dFFTHarm_s.f_SupX_v]=FGetSup(c);

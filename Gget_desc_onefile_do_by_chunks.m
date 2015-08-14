@@ -18,7 +18,7 @@
 % Permission is only granted to use for research purposes
 %
 
-function [ALLDESC_s] = Gget_desc_onefile_do_by_chunks(AUDIOFILENAME, do_s, config_s)
+function [ALLDESC_s,ALLREP_s] = Gget_desc_onefile_do_by_chunks(AUDIOFILENAME, do_s, config_s)
 
 % Get number of samples in audio file (just assume wave for now)
 sfSizeInfo=wavread(AUDIOFILENAME,'size');
@@ -33,7 +33,7 @@ if(~isfield(config_s.SOUND,'i_ChunkSize')),
     config_s.SOUND.i_ChunkSize=32768;
 end;
 chunkPoints=(1:config_s.SOUND.i_ChunkSize:nSamples);
-chunkPoints=chunkPoints(1:end-1);
+chunkPoints=chunkPoints(1:end);
 
 ALLDESC_s=struct();
 ALLREP_s=struct();
@@ -85,8 +85,12 @@ for rangeMin=chunkPoints,
     	% === STFT Representation power-scale
     	fprintf(1, 'Descriptors based on STFTpow\n');
     	config_s.STFTpow.w_DistType	= 'pow'; % other config. args. will take defaults
-    	FFT2_o					= cFFTRep(Snd_o, config_s.STFTpow);
-%    	ALLDESC_s.STFTpow_raw	= FFT2_o;
+    	FFT2_o=cFFTRep(Snd_o, config_s.STFTpow);
+        if isfield(ALLREP_s,'STFTpow')
+            ALLREP_s.STFTpow=[ALLREP_s.STFTpow,FFT2_o];
+        else
+            ALLREP_s.STFTpow=FFT2_o;
+        end
     	STFTpow		= FCalcDescr(FFT2_o);
         if isfield(ALLDESC_s,'STFTpow'),
             ALLDESC_s.STFTpow=[ALLDESC_s.STFTpow,cFFTDescr(STFTpow)];
@@ -99,7 +103,11 @@ for rangeMin=chunkPoints,
     	% === Sinusoidal Harmonic Model Representation
     	fprintf(1, 'Descriptors based on Harmonic\n');
         Harm_o                  = cHarmRep(Snd_o, config_s.Harmonic);
-%    	ALLDESC_s.Harmonic_raw	= Harm_o;
+        if isfield(ALLREP_s,'Harmonic')
+            ALLREP_s.Harmonic=[ALLREP_s.Harmonic,Harm_o];
+        else
+            ALLREP_s.Harmonic=Harm_o;
+        end
     	Harmonic		= FCalcDescr(Harm_o);
         if isfield(ALLDESC_s,'Harmonic'),
             ALLDESC_s.Harmonic=[ALLDESC_s.Harmonic,cHarmDescr(Harmonic)];

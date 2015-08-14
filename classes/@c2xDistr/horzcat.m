@@ -7,15 +7,10 @@ function [a] = horzcat(a,b)
 a=struct(a);
 b=struct(b);
 % check for equality of certain fields
-if ~(a.i_SizeX == b.i_SizeX)
-    error(['Fields i_SizeX not equal.' ...
-        'First is ' a.i_SizeX ' second is ' b.i_SizeX]);
-end;
 if ~(a.i_SizeY == b.i_SizeY)
     error(['Fields i_SizeY not equal.' ...
         'First is ' a.i_SizeY ', second is ' b.i_SizeY]);
 end;
-    'f_SupX_v'
 if any(~(a.f_SupY_v == b.f_SupY_v))
     error(['Fields f_SupY_v not equal.' ...
         'First is ' a.f_SupY_v ', second is ' b.f_SupY_v]);
@@ -35,5 +30,6 @@ end;
 f_SupX_v=b.f_SupX_v+a.f_SupX_v(end)+ ...
     (a.f_SupX_v(end)-a.f_SupX_v(end-1));
 a.f_SupX_v=[a.f_SupX_v,f_SupX_v];
+a.i_SizeX=a.i_SizeX+b.i_SizeX;
 a.f_DistrPts_m=[a.f_DistrPts_m,b.f_DistrPts_m];
 a=class(a,'c2xDistr');
