@@ -30,5 +30,9 @@ if any(~(a.f_Win_v == b.f_Win_v))
     error(['Fields f_Win_v not equal.' ...
         'First is ' a.f_Win_v ', second is ' b.f_Win_v]);
 end;
-a.c2xDistr=[a.c2xDistr,b.c2xDistr];
-a=class(a,'cFFTRep');
+% "a" cannot contain a field called c2xDistr before it becomes a class, so we
+% store the concatenated distribution somewhere else and delete the field
+distr=[a.c2xDistr,b.c2xDistr];
+a=rmfield(a,'c2xDistr');
+% Now it will inherit from the concatenated c2xDistr
+a=class(a,'cFFTRep',distr);
