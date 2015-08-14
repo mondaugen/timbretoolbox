@@ -21,7 +21,7 @@
 function [ALLDESC_s] = Gget_desc_onefile_do_by_chunks(AUDIOFILENAME, do_s, config_s)
 
 % Get number of samples in audio file (just assume wave for now)
-sfSizeInfo=wavread(AUDIOFILENAME,'size')
+sfSizeInfo=wavread(AUDIOFILENAME,'size');
 nSamples=sfSizeInfo(1);
 nChannels=sfSizeInfo(2);
 if(nChannels~=1)
@@ -36,6 +36,7 @@ chunkPoints=(1:config_s.SOUND.i_ChunkSize:nSamples);
 chunkPoints=chunkPoints(1:end-1);
 
 ALLDESC_s=struct();
+ALLREP_s=struct();
 
 for rangeMin=chunkPoints,
     rangeMax=rangeMin+config_s.SOUND.i_ChunkSize-1;
@@ -47,18 +48,18 @@ for rangeMin=chunkPoints,
     Snd_o	= cSound(AUDIOFILENAME,config_s.SOUND);
     %Snd_o	= FNormalize(Snd_o); 
     
-    ALLDESC_s.DATA = struct(Snd_o);
+%    ALLREP_s.DATA = struct(Snd_o);
     
     if( do_s.b_TEE )
     	% === Time-domain Representation (log attack time, envelope, etc)
     	fprintf(1, 'Descriptors based on Temporal Energy Envelope / Audio Signal\n');
         [TEE,AS]=FCalcDescr(Snd_o,config_s.TEE);
-        if isfield(ALLDESC_s,'TEE') & isfield(ALLDESC_s,'AS'),
-            ALLDESC_s.TEE=[ALLDESC_s.TEE,cDescr(TEE)];
-            ALLDESC_s.AS=[ALLDESC_s.AS,cDescr(AS)];
+        if isfield(ALLDESC_s,'TEE') && isfield(ALLDESC_s,'AS'),
+            ALLDESC_s.TEE=[ALLDESC_s.TEE,cTEEDescr(TEE)];
+            ALLDESC_s.AS=[ALLDESC_s.AS,cASDescr(AS)];
         else,
-            ALLDESC_s.TEE=cDescr(TEE);
-            ALLDESC_s.AS=cDescr(AS);
+            ALLDESC_s.TEE=cTEEDescr(TEE);
+            ALLDESC_s.AS=cASDescr(AS);
         end;
     end
     
@@ -66,13 +67,17 @@ for rangeMin=chunkPoints,
     	% === STFT Representation mag-scale
     	fprintf(1, 'Descriptors based on STFTmag\n');
     	config_s.STFTmag.w_DistType	= 'mag'; % other config. args. will take defaults
-    	FFT1_o					= cFFTRep(Snd_o, config_s.STFTmag);
-%    	ALLDESC_s.STFTmag_raw	= FFT1_o;
+    	FFT1_o=cFFTRep(Snd_o,config_s.STFTmag);
+        if isfield(ALLREP_s,'STFTmag')
+            ALLREP_s.STFTmag=[ALLREP_s.STFTmag,FFT1_o];
+        else
+            ALLREP_s.STFTmag=FFT1_o;
+        end
     	STFTmag		= FCalcDescr(FFT1_o);
         if isfield(ALLDESC_s,'STFTmag'),
-            ALLDESC_s.STFTmag=[ALLDESC_s.STFTmag,cDescr(STFTmag)];
+            ALLDESC_s.STFTmag=[ALLDESC_s.STFTmag,cFFTDescr(STFTmag)];
         else,
-            ALLDESC_s.STFTmag=cDescr(STFTmag);
+            ALLDESC_s.STFTmag=cFFTDescr(STFTmag);
         end;
     end
     
@@ -84,9 +89,9 @@ for rangeMin=chunkPoints,
 %    	ALLDESC_s.STFTpow_raw	= FFT2_o;
     	STFTpow		= FCalcDescr(FFT2_o);
         if isfield(ALLDESC_s,'STFTpow'),
-            ALLDESC_s.STFTpow=[ALLDESC_s.STFTpow,cDescr(STFTpow)];
+            ALLDESC_s.STFTpow=[ALLDESC_s.STFTpow,cFFTDescr(STFTpow)];
         else,
-            ALLDESC_s.STFTpow=cDescr(STFTpow);
+            ALLDESC_s.STFTpow=cFFTDescr(STFTpow);
         end;
     end;
     
@@ -97,9 +102,9 @@ for rangeMin=chunkPoints,
 %    	ALLDESC_s.Harmonic_raw	= Harm_o;
     	Harmonic		= FCalcDescr(Harm_o);
         if isfield(ALLDESC_s,'Harmonic'),
-            ALLDESC_s.Harmonic=[ALLDESC_s.Harmonic,cDescr(Harmonic)];
+            ALLDESC_s.Harmonic=[ALLDESC_s.Harmonic,cHarmDescr(Harmonic)];
         else,
-            ALLDESC_s.Harmonic=cDescr(Harmonic);
+            ALLDESC_s.Harmonic=cHarmDescr(Harmonic);
         end;
     end
     
@@ -113,9 +118,9 @@ for rangeMin=chunkPoints,
 %    	ALLDESC_s.ERBfft_raw 	= ERB1_o;
     	ERBfft 		= FCalcDescr(ERB1_o);
         if isfield(ALLDESC_s,'ERBfft'),
-            ALLDESC_s.ERBfft=[ALLDESC_s.ERBfft,cDescr(ERBfft)];
+            ALLDESC_s.ERBfft=[ALLDESC_s.ERBfft,cERBDescr(ERBfft)];
         else,
-            ALLDESC_s.ERBfft=cDescr(ERBfft);
+            ALLDESC_s.ERBfft=cERBDescr(ERBfft);
         end;
     end
     
@@ -128,14 +133,14 @@ for rangeMin=chunkPoints,
 %    	ALLDESC_s.ERBgam_raw 	= ERB2_o;
     	ERBgam 		= FCalcDescr(ERB2_o);
         if isfield(ALLDESC_s,'ERBgam'),
-            ALLDESC_s.ERBgam=[ALLDESC_s.ERBgam,cDescr(ERBgam)];
+            ALLDESC_s.ERBgam=[ALLDESC_s.ERBgam,cERBDescr(ERBgam)];
         else,
-            ALLDESC_s.ERBgam=cDescr(ERBgam);
+            ALLDESC_s.ERBgam=cERBDescr(ERBgam);
         end;
     end
+end
+
 flds=fields(ALLDESC_s);
 for k=1:length(flds),
     ALLDESC_s.(flds{k})=struct(ALLDESC_s.(flds{k}));
 end;
-
-end

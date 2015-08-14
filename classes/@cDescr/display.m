@@ -14,7 +14,5 @@
 %
 
 function display(c)
-
-disp(c.f_LenX);
-
+struct(c)
 return;

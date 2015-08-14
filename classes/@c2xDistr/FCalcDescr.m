@@ -124,5 +124,3 @@ if do_affiche
 	Fpause
 end
 % ++++++++++++++++++++++++++++++++++
-
-help setfº

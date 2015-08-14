@@ -89,6 +89,9 @@ dTEE_s.RMSEnv		= f_Energy_v(:).';		% === GFP 2010/11/16
 % The support vector for the RMSEnv goes from 0 to the time of the last sample
 % in seconds, incremented by the sample period.
 dTEE_s.f_SupX_v     = (0:(c.i_Len-1))/c.f_Fs;
+% The chunk size is stored to indicate the amount of time over which the
+% values, except for RMSEnv and f_SupX_v, are valid.
+dTEE_s.f_ChunkSize_sec = c.i_Len/c.f_Fs;
 %dTEE_s.ADSR_v		= f_ADSR_v([1 2 5]);	% === attack-decay-sustain-release envelope
 for num_dim=1:size(f_AutoCoeffs_v,1)
 dAS_s.(sprintf('AutoCorr%d',num_dim)) = f_AutoCoeffs_v(num_dim,:);	% === autocorrelation
