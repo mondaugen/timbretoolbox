@@ -48,8 +48,6 @@ for rangeMin=chunkPoints,
     Snd_o	= cSound(AUDIOFILENAME,config_s.SOUND);
     %Snd_o	= FNormalize(Snd_o); 
     
-%    ALLREP_s.DATA = struct(Snd_o);
-    
     if( do_s.b_TEE )
     	% === Time-domain Representation (log attack time, envelope, etc)
     	fprintf(1, 'Descriptors based on Temporal Energy Envelope / Audio Signal\n');
@@ -122,8 +120,12 @@ for rangeMin=chunkPoints,
     	fprintf(1, 'Descriptors based on ERBfft\n');
     	config_s.ERBfft.w_Method	= 'fft';
     	config_s.ERBfft.f_Exp		= 1/4'; % partial loudness exponent (0.25 from Hartmann97)
-    	ERB1_o					= cERBRep(Snd_o, config_s.ERBfft);
-%    	ALLDESC_s.ERBfft_raw 	= ERB1_o;
+    	ERB1_o                      = cERBRep(Snd_o, config_s.ERBfft);
+        if isfield(ALLREP_s,'ERBfft')
+            ALLREP_s.ERBfft=[ALLREP_s.ERBfft,ERB1_o];
+        else
+            ALLREP_s.ERBfft=ERB1_o;
+        end
     	ERBfft 		= FCalcDescr(ERB1_o);
         if isfield(ALLDESC_s,'ERBfft'),
             ALLDESC_s.ERBfft=[ALLDESC_s.ERBfft,cERBDescr(ERBfft)];
@@ -138,7 +140,11 @@ for rangeMin=chunkPoints,
     	config_s.ERBgam.w_Method	= 'gammatone';
     	config_s.ERBgam.f_Exp		= 1/4'; % partial loudness exponent (0.25 from Hartmann97)
     	ERB2_o					= cERBRep(Snd_o, config_s.ERBgam);
-%    	ALLDESC_s.ERBgam_raw 	= ERB2_o;
+        if isfield(ALLREP_s,'ERBgam')
+            ALLREP_s.ERBgam=[ALLREP_s.ERBgam,ERB2_o];
+        else
+            ALLREP_s.ERBgam=ERB2_o;
+        end
     	ERBgam 		= FCalcDescr(ERB2_o);
         if isfield(ALLDESC_s,'ERBgam'),
             ALLDESC_s.ERBgam=[ALLDESC_s.ERBgam,cERBDescr(ERBgam)];

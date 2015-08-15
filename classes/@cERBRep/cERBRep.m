@@ -62,11 +62,14 @@ d.f_SupY_v	= (d.f_SupY_v ./ FGetSampRate(oSnd))'; % normalized support
 d.f_SampRateX = FGetSampRate(oSnd) ./ config_s.i_HopSize;
 d.f_SampRateY = d.i_SizeY ./ FGetSampRate(oSnd);
 
+% TODO: The Equivalent Noise Bandwidth (ENBW) has not been calculated for ERB
+% representation.
+d.f_ENBW=0;
+
 % ERB specific
 c.i_HopSize	= config_s.i_HopSize;
 c.w_Method	= config_s.w_Method;
-
-
+c.f_Exp     = config_s.f_Exp;
 
 % Build class
 c = class(c, 'cERBRep', c2xDistr(d)); % inherit generic distribution properties
