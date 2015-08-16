@@ -40,6 +40,16 @@
 % OUTPUTS:
 % ========
 % (1) Harmo object
+% i_IncToNext   - If the descriptors are being calculated in chunks, how many
+%                 samples the read head should be advanced to have the chunk
+%                 start where this analysis left off. For example if the chunk
+%                 size is 16 samples, the hop size is 2 samples and the window
+%                 size is 5 samples, the highest index attained where the window
+%                 still fits within the chunk is 11. So the next hop we want to
+%                 compute is at index 13 but before we can do that, we must
+%                 read in more samples. Before reading in more samples,
+%                 increment the read head by 12 to place the beginning of the
+%                 chunk where the next hop should land.
 %
 %  NOTE: The spectrogram contained in this output is of a signal that has been
 %  Hilbert transformed before carrying out the spectrogram analysis. This means
@@ -61,6 +71,10 @@ c.config_s	= config_s;
 [c.f_F0_v, c.PartTrax_s, d.f_SupX_v, d.f_SupY_v, d.f_DistrPts_m, d.f_ENBW, ...
     d.f_SampRateX, d.f_SampRateY, c.config_s] = ...
     Fanalyseharmo(FGetSignal(Snd_o), FGetSampRate(Snd_o), c.config_s);
+
+c.i_Len=FGetLen(Snd_o);
+c.i_IncToNext=(floor((c.i_Len - c.config_s.i_WinSize)/c.config_s.i_HopSize + ...
+    1)*c.config_s.i_HopSize);
 
 % c2xDistr fields
 d.i_SizeX=size(d.f_DistrPts_m,2);

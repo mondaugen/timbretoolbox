@@ -1,4 +1,4 @@
-function [c,f,t]=ERBspect(a,sr,method,exponent,hopsize)
+function [c,f,t,wsize]=ERBspect(a,sr,method,exponent,hopsize)
 %ERBspect - Cochleagram of signal
 %  p = ERBspect(a,sr,method)
 %  calculates a cochleagram (spectrogram with same frequency resolution and
@@ -15,6 +15,8 @@ function [c,f,t]=ERBspect(a,sr,method,exponent,hopsize)
 %   p.cochcleagram: cochleagram matrix (instantaneous partial loudness)
 %   p.cfarray: Hz - column vector of channel frequencies
 %   p.times: s - frame times
+% 
+% wsize:  samples - window size.
 %
 %  See also: ERBpower.m
 
@@ -56,9 +58,10 @@ bwfactor = []; outermiddle = []; cfarray = [];
 
 switch lower(method)
 	case 'fft'
-		[c,f,t] = ERBpower(a,sr,cfarray,hopsize,bwfactor);
+		[c,f,t,wsize] = ERBpower(a,sr,cfarray,hopsize,bwfactor);
 	case 'gammatone'
 		[c,f,t] = ERBpower2(a,sr,cfarray,hopsize,bwfactor);
+        wsize=0;
 	otherwise
 		error('unexpected method');
 end

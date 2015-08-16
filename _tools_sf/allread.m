@@ -62,8 +62,6 @@ function [y,Fs,bits]=allread(file,ext,format)
 % software for any purpose.  It is provided "as is" without express
 % or implied warranty.  Beware of the bugs.
 
-
-
 if nargin>3,
   error('Too many input arguments.');
 end

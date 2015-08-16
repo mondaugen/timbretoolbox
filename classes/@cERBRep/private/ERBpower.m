@@ -1,6 +1,6 @@
-function [c,f,t]=ERBpower(a,sr,cfarray,hopsize,bwfactor)
+function [c,f,t,wsize]=ERBpower(a,sr,cfarray,hopsize,bwfactor)
 %ERBPOWER FFT-based cochlear power spectrogram
-%  [C,F,T] = ERBPOWER(A,SR,CFARRAY,HOPSIZE,BWFACTOR) 
+%  [C,F,T,WSIZE] = ERBPOWER(A,SR,CFARRAY,HOPSIZE,BWFACTOR) 
 %  Power spectrogram with same frequency resolution and scale as human ear.
 %
 %  A: audio signal
@@ -12,6 +12,7 @@ function [c,f,t]=ERBpower(a,sr,cfarray,hopsize,bwfactor)
 %  C: spectrogram matrix
 %  F: Hz - array of channel frequencies
 %  T: s - array of times
+%  WSIZE: samples - window size
 %
 %  Spectral resolution is similar to that of the cochlea, temporal resolution is
 %  similar to the ERD of the impulse response of the lowest CF channels (about 20 ms).

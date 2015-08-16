@@ -79,7 +79,10 @@ end;
 f_SampRateX=1/STEP_sec;
 
 L_n				= round(L_sec*sr_hz);
+config_s.i_WinSize=L_n;
 STEP_n			= round(STEP_sec*sr_hz);
+config_s.i_HopSize=STEP_n;
+
 if (~isfield(config_s,'i_FFTSize')),
     N			= 4*2^nextpow2(L_n);	% === large zero-padding to get better frequency resolution
     config_s.i_FFTSize=N;

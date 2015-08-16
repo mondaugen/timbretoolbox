@@ -1,4 +1,4 @@
-function [c,f,t]=ERBpower2(a,sr,cfarray,hopsize,bwfactor)
+function [c,f,t,wsize]=ERBpower2(a,sr,cfarray,hopsize,bwfactor)
 %ERBPOWER2 Cochlear power spectrogram by gammatone filter bank
 %  [C,F,T] = ERBPOWER2(A,SR,CFARRAY,HOPSIZE,BWFACTOR) 
 %  Power spectrogram with same frequency resolution and scale as human ear.

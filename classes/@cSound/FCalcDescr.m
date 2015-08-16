@@ -49,10 +49,10 @@ f_EffDur	= FCalcEffectiveDur(f_Energy_v, 0.4) ./ c.f_Fs;	% effective duration (i
 % === Instantaneous temporal features
 count = 0;
 dAS_f_SupX_v_count = 0;
-dAS_f_SupX_v = zeros(1,floor((c.i_Len - c.i_WinLen)/c.i_HopSize)+1);
-for n = (1 + c.i_HopSize*(0 : floor((c.i_Len - c.i_WinLen)/c.i_HopSize))),
-%for n = 1 : c.i_HopSize : (c.i_Len - c.i_WinLen)
-	f_Frm_v					= c.f_Sig_v( n + [0:c.i_WinLen-1]) .* c.f_Win_v;
+dAS_f_SupX_v = zeros(1,floor((c.i_Len - c.i_WinSize)/c.i_HopSize)+1);
+for n = (1 + c.i_HopSize*(0 : floor((c.i_Len - c.i_WinSize)/c.i_HopSize))),
+%for n = 1 : c.i_HopSize : (c.i_Len - c.i_WinSize)
+	f_Frm_v					= c.f_Sig_v( n + [0:c.i_WinSize-1]) .* c.f_Win_v;
 
 	count = count+1;
 	% === Autocorrelation
@@ -98,7 +98,7 @@ dAS_s.(sprintf('AutoCorr%d',num_dim)) = f_AutoCoeffs_v(num_dim,:);	% === autocor
 end
 dAS_s.ZcrRate		= f_ZcrRate_v;		% === zero crossing rate
 % The support vector for the autocorrelation values and zero crossing rate goes
-% from 0 to the time floor((c.i_Len - c.i_WinLen)/c.i_HopSize)*c.i_HopSize/c.f_Fs
+% from 0 to the time floor((c.i_Len - c.i_WinSize)/c.i_HopSize)*c.i_HopSize/c.f_Fs
 % incremented by c.i_HopSize/c.f_Fs
 % 
 dAS_s.f_SupX_v      = dAS_f_SupX_v;

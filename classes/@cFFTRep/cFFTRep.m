@@ -59,16 +59,28 @@
 % OUTPUTS:
 % ========
 % (1) FFTRep object
-% The result is a cFFTRep object which contains, through class inheritance of a
-% c2xDistr object,
-%   a matrix f_DistrPts_m whose columns are the FFT frames corresponding to the
-%                         sample points and whose rows are the spectrum values
-%                         from 0 to half the sample rate, 
-%   a vector d.f_SupX_v   containing the seconds to which the centre of each
-%                         analysis window refers, and 
-%   a vector d.f_SupY_v   containing the normalized frequencies to which each
-%                         row corresponds, up to half the sampling rate.
-% This means that the columns of this matrix are of length i_FFTSize/2.
+% %%% NEEDS REVISION
+% %The result is a cFFTRep object which contains, through class inheritance of a
+% %c2xDistr object,
+% %  a matrix f_DistrPts_m whose columns are the FFT frames corresponding to the
+% %                        sample points and whose rows are the spectrum values
+% %                        from 0 to half the sample rate, 
+% %  a vector d.f_SupX_v   containing the seconds to which the centre of each
+% %                        analysis window refers, and 
+% %  a vector d.f_SupY_v   containing the normalized frequencies to which each
+% %                        row corresponds, up to half the sampling rate.
+% %This means that the columns of this matrix are of length i_FFTSize/2.
+% %%%
+% i_IncToNext   - If the descriptors are being calculated in chunks, how many
+%                 samples the read head should be advanced to have the chunk
+%                 start where this analysis left off. For example if the chunk
+%                 size is 16 samples, the hop size is 2 samples and the window
+%                 size is 5 samples, the highest index attained where the window
+%                 still fits within the chunk is 11. So the next hop we want to
+%                 compute is at index 13 but before we can do that, we must
+%                 read in more samples. Before reading in more samples,
+%                 increment the read head by 12 to place the beginning of the
+%                 chunk where the next hop should land.
 % 
 %
 % Member functions
@@ -180,6 +192,7 @@ c.i_WinSize	= config_s.i_WinSize;
 c.i_HopSize	= config_s.i_HopSize;
 c.w_WinType	= config_s.w_WinType;
 c.f_Win_v	= config_s.f_Win_v;
+
 % If the window is centred at t, this is the starting index at which to
 % look up the signal which you want to multiply by the window. It is a
 % negative number because (almost) half of the window will be before time t
@@ -201,6 +214,8 @@ d.f_SampRateY = config_s.f_SampRateY;
 
 % === get input sig. (make analytic)
 f_Sig_v = FGetSignal(oSnd);
+c.i_Len=FGetLen(oSnd);
+c.i_IncToNext=(floor((c.i_Len - c.i_WinSize)/c.i_HopSize + 1)*c.i_HopSize);
 if isreal(f_Sig_v), f_Sig_v = hilbert(f_Sig_v); end
  
 [d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, d.f_ENBW] = FCalcSpectrogram(f_Sig_v, ...
@@ -210,6 +225,7 @@ if isreal(f_Sig_v), f_Sig_v = hilbert(f_Sig_v); end
 % === support vectors            
 d.i_SizeX	= size(d.f_DistrPts_m,2);
 d.i_SizeY	= size(d.f_DistrPts_m,1);
+
 
 % === Build class
 c = class(c, 'cFFTRep', c2xDistr(d)); % inherit generic distribution properties
