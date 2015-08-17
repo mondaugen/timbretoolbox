@@ -32,15 +32,15 @@
 function [c] = cERBRep(varargin)
 
 % === Handle input args
-switch nargin
-	case 1
+if nargin == 1
 		oSnd = varargin{1};
 		% use default settings
 		config_s.w_Method		= 'fft';% other option: w_Method = 'gammatone';
 		config_s.f_HopSize_sec	= 256/44100;
 		config_s.i_HopSize		= round(config_s.f_HopSize_sec * FGetSampRate(oSnd));
 		config_s.f_Exp			= 1/4;
-	case 2
+end
+if nargin > 1
 		% use input config structure
 		oSnd				= varargin{1};
 		config_s 			= varargin{2};
@@ -49,20 +49,20 @@ switch nargin
 		if ~isfield( config_s, 'i_HopSize'),	config_s.f_HopSize_sec = 256/44100;	end
 		config_s.i_HopSize	= round(config_s.f_HopSize_sec * FGetSampRate(oSnd));
 		if ~isfield( config_s, 'f_Exp'),		config_s.f_Exp = 1/4;				end
-	otherwise
-		disp('Error');
-		exit(1);
+end
+if nargin > 2
+    f_Pad_v=varargin{3};
 end;
 
 f_Sig_v = FGetSignal(oSnd);
 
 % Calc. ERB power spec.
-[d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, c.i_WinSize] = ERBspect(f_Sig_v', ...                             % input sig.
-	FGetSampRate(oSnd), ...						% samp. rate
-	config_s.w_Method, ...						% method ('fft' or 'gammatone')
-	config_s.f_Exp, ...							% exponent (1/4 default)
-	config_s.i_HopSize/FGetSampRate(oSnd));		% hopsize in seconds
-
+[d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, i_ForwardWinSize] = ERBspect(f_Sig_v', ...                             % input sig.
+	    FGetSampRate(oSnd), ...						% samp. rate
+	    config_s.w_Method, ...						% method ('fft' or 'gammatone')
+	    config_s.f_Exp, ...							% exponent (1/4 default)
+	    config_s.i_HopSize/FGetSampRate(oSnd),...	% hopsize in seconds
+        f_Pad_v);
 
 d.i_SizeY	= length(d.f_SupY_v);
 d.i_SizeX	= length(d.f_SupX_v);
@@ -79,15 +79,18 @@ d.f_ENBW=0;
 % ERB specific
 c.i_HopSize	= config_s.i_HopSize;
 c.w_Method	= config_s.w_Method;
+if ~isfield(config_s,'f_Exp');
+    config_s.f_Exp = 1/4'; % partial loudness exponent (0.25 from Hartmann97)
+end 
 c.f_Exp     = config_s.f_Exp;
 
 c.i_Len=FGetLen(oSnd);
-if c.i_WinSize == 0
+if i_ForwardWinSize == 0
     % Some ERB techniques don't use windowing so it is safe to just increment by
     % the whole length.
     c.i_IncToNext=c.i_Len;
 else
-    c.i_IncToNext=(floor((c.i_Len - c.i_WinSize)/c.i_HopSize + 1)*c.i_HopSize);
+    c.i_IncToNext=(floor((c.i_Len - i_ForwardWinSize)/c.i_HopSize + 1)*c.i_HopSize);
 end
 
 % Build class

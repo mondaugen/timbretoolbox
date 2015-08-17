@@ -114,7 +114,7 @@ switch c.w_FileType
             % skip over samples
             fseek(f,s__.bytes*(s_Config.i_SampleRange_v(1)-1)*s_Config.i_Channels,'bof');
             % read in samples
-            data=fread(f,diff(s_Config.i_SampleRange_v)*s_Config.i_Channels,s_Config.w_Format);
+            data=fread(f,(diff(s_Config.i_SampleRange_v)+1)*s_Config.i_Channels,s_Config.w_Format);
         else
             data=fread(f,Inf,s_Config.w_Format);
         end

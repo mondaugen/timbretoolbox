@@ -1,5 +1,5 @@
-function [f_DistrPts_m,f_SupY_v,f_SupX_v,f_ENBW] = FCalcSpectrogram(f_Sig_v, ...
-    i_FFTSize, sr_hz, f_Win_v, i_Overlap, w_DistType)
+function [f_DistrPts_m,f_SupY_v,f_SupX_v,f_ENBW,i_ForwardWinSize] = FCalcSpectrogram(f_Sig_v, ...
+    i_FFTSize, sr_hz, f_Win_v, i_Overlap, w_DistType, f_Pad_v)
 % FCALCSPECTROGRAM - Calculates the spectrogram of a signal
 % f_Sig_v    - The signal to compute a spectrogram of.
 % i_FFTSize  - The length of the FFT.
@@ -10,25 +10,37 @@ function [f_DistrPts_m,f_SupY_v,f_SupX_v,f_ENBW] = FCalcSpectrogram(f_Sig_v, ...
 %              with "specgram". To get the the overlap from the hop size, do:
 %              i_Overlap = length(f_Win_v) - i_HopSize.
 % w_DistType - The kind of distribution produced. See below for the kinds.
+% f_Pad_v    - A vector of values that can be used to pad the beginning of the
+%              signal. This is useful when computing the spectrogram in chunks.
+%              As the first window's centre is aligned with the first sample,
+%              half (or half-1 if an odd sized window) of the window's samples
+%              will be before the first sample. If this argument is not given,
+%              these samples are taken to be 0. Otherwise N samples from the end
+%              of this vector will be taken to be the signal before the 1st
+%              sample where N is half the window length if the window is of even
+%              length or half the window length - 1 if the window is of odd
+%              length.
 % 
 % Returns 
-% f_DistrPts_m - the distribution points (not a valid probability distribution!)
-% f_SupY_v     - the normalized frequencies to which the rows of the
-%                distribution refer.
-% f_SupX_v     - the times to which the columns of the distribution refer (in
-%                seconds, weird I know)
-% f_ENBW       - The ENBW total over all bins of the window used. This can be
-%                used to compute the total power in each frame from the
-%                resulting power spectrum: 
-%                   P_total = 2*sum(f_DistrPts_m)./f_ENBW
-%                The reason for the 2 is because half of the spectrum is
-%                omitted (frequencies above Nyquist are not stored). Note that
-%                this only applies to the power spectrum calculation.
-                    
+% f_DistrPts_m     - the distribution points (not a valid probability distribution!)
+% f_SupY_v         - the normalized frequencies to which the rows of the
+%                    distribution refer.
+% f_SupX_v         - the times to which the columns of the distribution refer (in
+%                    seconds, weird I know)
+% f_ENBW           - The ENBW total over all bins of the window used. This can be
+%                    used to compute the total power in each frame from the
+%                    resulting power spectrum: 
+%                       P_total = 2*sum(f_DistrPts_m)./f_ENBW
+%                    The reason for the 2 is because half of the spectrum is
+%                    omitted (frequencies above Nyquist are not stored). Note that
+%                    this only applies to the power spectrum calculation.
+% i_ForwardWinSize - This is the number of samples after the hop index that fit
+%                    within the window. This might not be equal to the window
+%                    size if the window is not aligned to the hop index at the
+%                    beginning, e.g., when the window's centre is aligned with
+%                    the hop index. This is used to calculate how many hops will
+%                    be taken when calculating the spectrogram.
 
-if (nargin == 5),
-    w_DistType='mag';
-end;
 i_WinSize = length(f_Win_v);
 if (i_Overlap >= i_WinSize),
     error('Overlap greater than or equal to window size.');
@@ -38,6 +50,9 @@ f_SampRateX = sr_hz / i_HopSize;
 
 % Make column vector
 f_Sig_v = f_Sig_v(:);
+if (length(f_Pad_v) > 0)
+    f_Pad_v=f_Pad_v(:);
+end
 
 % If the window is centred at t, this is the starting index at which to
 % look up the signal which you want to multiply by the window. It is a
@@ -53,13 +68,25 @@ iLHWinSize = ceil(-(i_WinSize-1)/2);
 % of the window, but slightly to the left of the centre of the window
 % (before it).
 iRHWinSize = ceil((i_WinSize-1)/2);
+% iRHWinSize is a value by which you increment an index and not a size, so we
+% add 1.
+i_ForwardWinSize=iRHWinSize+1;
+
+% Length of the signal before padding
+i_Len		= length(f_Sig_v);
 
 % pre/post-pad signal
-f_Sig_v = [zeros(-1*iLHWinSize,1); f_Sig_v; zeros(iRHWinSize,1)];
+if length(f_Pad_v) <= 0
+    f_Sig_v = [zeros(-1*iLHWinSize,1); f_Sig_v];
+else
+    f_Sig_v = [f_Pad_v(end-fliplr(0:(-1*iLHWinSize-1))); f_Sig_v];
+end
+
+% last hop index where the window will fit within the end of the signal
+i_LastIndex=floor((i_Len-(iRHWinSize+1))/i_HopSize)*i_HopSize+1;
 
 % support vectors            
-i_Len		= length(f_Sig_v);
-i_Ind		= [-iLHWinSize+1 : i_HopSize : i_Len-iRHWinSize];
+i_Ind       = (1:i_HopSize:i_LastIndex)+iLHWinSize*-1;
 i_SizeX	    = length(i_Ind);
 i_SizeY	    = i_FFTSize/2; % Only return frequencies below Nyquist rate.
 f_SupX_v	= [0:(i_SizeX-1)]/f_SampRateX;  % X support (time)
@@ -68,7 +95,8 @@ f_SupY_v	= ([0:(i_SizeY-1)]/i_SizeY/2)'; % Y support (normalized freq.)
 % calc. windowed sig.
 f_DistrPts_m = zeros(i_FFTSize, i_SizeX);
 for( i=1:i_SizeX )
-    f_DistrPts_m(1:i_WinSize,i) = f_Sig_v(i_Ind(i)+iLHWinSize:i_Ind(i)+iRHWinSize) .* f_Win_v; 
+    f_DistrPts_m(1:i_WinSize,i) = ...
+        f_Sig_v((i_Ind(i)+iLHWinSize):(i_Ind(i)+iRHWinSize)) .* f_Win_v; 
 end;
 
 % fft (cols of dist.)

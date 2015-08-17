@@ -62,18 +62,19 @@
 % Permission is only granted to use for research purposes
 %
 
-function [c] = cHarmRep(Snd_o, config_s)
+function [c] = cHarmRep(Snd_o, config_s, f_Pad_v)
 
 
 % === get input sig. 
 c.config_s	= config_s;
 
 [c.f_F0_v, c.PartTrax_s, d.f_SupX_v, d.f_SupY_v, d.f_DistrPts_m, d.f_ENBW, ...
-    d.f_SampRateX, d.f_SampRateY, c.config_s] = ...
-    Fanalyseharmo(FGetSignal(Snd_o), FGetSampRate(Snd_o), c.config_s);
+    d.f_SampRateX, d.f_SampRateY, c.config_s, i_ForwardWinSize] = ...
+        Fanalyseharmo(FGetSignal(Snd_o), FGetSampRate(Snd_o), c.config_s, ...
+            f_Pad_v);
 
 c.i_Len=FGetLen(Snd_o);
-c.i_IncToNext=(floor((c.i_Len - c.config_s.i_WinSize)/c.config_s.i_HopSize + ...
+c.i_IncToNext=(floor((c.i_Len - i_ForwardWinSize)/c.config_s.i_HopSize + ...
     1)*c.config_s.i_HopSize);
 
 % c2xDistr fields

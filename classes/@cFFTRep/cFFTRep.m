@@ -96,8 +96,7 @@
 function [c] = cFFTRep(varargin)
 
 % === Handle input args
-switch nargin
-    case 1
+if (nargin == 1)
         oSnd = varargin{1};        
         % === use default settings
         config_s.i_FFTSize		= 2048;
@@ -115,8 +114,8 @@ switch nargin
         config_s.f_BinSize		= config_s.f_sr_hz ./ config_s.i_FFTSize;
         config_s.f_SampRateY	= config_s.i_FFTSize ./ config_s.f_sr_hz;	% = 1 / config_s.f_BinSize;
         config_s.w_DistType		= 'pow';
-
-    case 2
+end
+if (nargin > 1)
         % === use input config structure
         oSnd        = varargin{1};
         config_s    = varargin{2};
@@ -178,12 +177,10 @@ switch nargin
         if ~isfield( config_s, 'f_BinSize'),		config_s.f_BinSize	= config_s.f_sr_hz ./ config_s.i_FFTSize; end;
         if ~isfield( config_s, 'f_SampRateY'),		config_s.f_SampRateY= config_s.i_FFTSize ./ config_s.f_sr_hz; end;   
         if ~isfield( config_s, 'w_DistType')		config_s.w_DistType	= 'pow'; end;  
-                
-    otherwise
-        disp('Error: bad set of arguments to cFFTRep');
-        %c = cFFTRep(zeros(1,10));
-        exit(1);
-end;
+end
+if (nargin > 2)
+    f_Pad_v=varargin{3};
+end
 
 % === FFT specific elements
 c.i_FFTSize	= config_s.i_FFTSize;
@@ -215,12 +212,18 @@ d.f_SampRateY = config_s.f_SampRateY;
 % === get input sig. (make analytic)
 f_Sig_v = FGetSignal(oSnd);
 c.i_Len=FGetLen(oSnd);
-c.i_IncToNext=(floor((c.i_Len - c.i_WinSize)/c.i_HopSize + 1)*c.i_HopSize);
 if isreal(f_Sig_v), f_Sig_v = hilbert(f_Sig_v); end
  
-[d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, d.f_ENBW] = FCalcSpectrogram(f_Sig_v, ...
-    c.i_FFTSize, config_s.f_sr_hz, c.f_Win_v, c.i_WinSize - c.i_HopSize, ...
-    config_s.w_DistType);
+if (nargin > 2)
+    [d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, d.f_ENBW, i_ForwardWinSize] = FCalcSpectrogram(f_Sig_v, ...
+        c.i_FFTSize, config_s.f_sr_hz, c.f_Win_v, c.i_WinSize - c.i_HopSize, ...
+        config_s.w_DistType, f_Pad_v);
+else
+    [d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, d.f_ENBW, i_ForwardWinSize] = FCalcSpectrogram(f_Sig_v, ...
+        c.i_FFTSize, config_s.f_sr_hz, c.f_Win_v, c.i_WinSize - c.i_HopSize, ...
+        config_s.w_DistType);
+end
+c.i_IncToNext=(floor((c.i_Len - i_ForwardWinSize)/c.i_HopSize + 1)*c.i_HopSize);
 
 % === support vectors            
 d.i_SizeX	= size(d.f_DistrPts_m,2);

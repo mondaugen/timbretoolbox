@@ -30,7 +30,8 @@
 
 
 function [f0_hz_v, PartTrax_s, f_SupX_v, f_SupY_v, f_DistrPts_m, f_ENBW, ...
-    f_SampRateX, f_SampRateY, config_s] = Fanalyseharmo(f_Sig_v, sr_hz, config_s)
+    f_SampRateX, f_SampRateY, config_s, i_ForwardWinSize] = Fanalyseharmo(f_Sig_v, sr_hz, ...
+    config_s, f_Pad_v)
 
 % Supply defaults if not specified
 
@@ -125,7 +126,9 @@ end;
 
 % make signal analytic before doing spectral analysis
 f_Sig_v         = hilbert(f_Sig_v);
-[B_m, F_v, T_v, f_ENBW] = FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n);
+[B_m, F_v, T_v, f_ENBW, i_ForwardWinSize] = ...
+    FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n, 'mag', f_Pad_v);
+
 B_m				= abs(B_m);
 T_v				= T_v+L_sec/2;
 

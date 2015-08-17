@@ -1,4 +1,4 @@
-function [c,f,t,wsize]=ERBspect(a,sr,method,exponent,hopsize)
+function [c,f,t,forward_wsize]=ERBspect(a,sr,method,exponent,hopsize,pad)
 %ERBspect - Cochleagram of signal
 %  p = ERBspect(a,sr,method)
 %  calculates a cochleagram (spectrogram with same frequency resolution and
@@ -8,6 +8,16 @@ function [c,f,t,wsize]=ERBspect(a,sr,method,exponent,hopsize)
 %  sr: Hz - sampling rate
 %  method: 'FFT' or 'gammatone' [default: 'FFT'] - calculation method
 %  exponent: exponent to obtain specific loudness from power [default: 1/4]
+%  PAD:        A vector of values that can be used to pad the beginning of the
+%              signal. This is useful when computing the spectrogram in chunks.
+%              As the first window's centre is aligned with the first sample,
+%              half (or half-1 if an odd sized window) of the window's samples
+%              will be before the first sample. If this argument is not given,
+%              these samples are taken to be 0. Otherwise N samples from the end
+%              of this vector will be taken to be the signal before the 1st
+%              sample where N is half the window length if the window is of even
+%              length or half the window length - 1 if the window is of odd
+%              length.
 %
 %  output:
 %   p.centroid: Hz - spectral centroid (instantaneous-loudness-weighted)
@@ -16,7 +26,12 @@ function [c,f,t,wsize]=ERBspect(a,sr,method,exponent,hopsize)
 %   p.cfarray: Hz - column vector of channel frequencies
 %   p.times: s - frame times
 % 
-% wsize:  samples - window size.
+%  FORWARD_WINSIZE:  samples - This is the number of samples after the hop index
+%                    that fit within the window. This might not be equal to the
+%                    window size if the window is not aligned to the hop index
+%                    at the beginning, e.g., when the window's centre is aligned
+%                    with the hop index. This is used to calculate how many hops
+%                    will be taken when calculating the spectrogram.
 %
 %  See also: ERBpower.m
 
@@ -58,10 +73,10 @@ bwfactor = []; outermiddle = []; cfarray = [];
 
 switch lower(method)
 	case 'fft'
-		[c,f,t,wsize] = ERBpower(a,sr,cfarray,hopsize,bwfactor);
+        [c,f,t,forward_wsize] = ERBpower(a,sr,cfarray,hopsize,bwfactor,pad);
 	case 'gammatone'
 		[c,f,t] = ERBpower2(a,sr,cfarray,hopsize,bwfactor);
-        wsize=0;
+        forward_wsize=0;
 	otherwise
 		error('unexpected method');
 end

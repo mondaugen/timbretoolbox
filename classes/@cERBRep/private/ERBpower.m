@@ -1,4 +1,4 @@
-function [c,f,t,wsize]=ERBpower(a,sr,cfarray,hopsize,bwfactor)
+function [c,f,t,forward_winsize]=ERBpower(a,sr,cfarray,hopsize,bwfactor,pad)
 %ERBPOWER FFT-based cochlear power spectrogram
 %  [C,F,T,WSIZE] = ERBPOWER(A,SR,CFARRAY,HOPSIZE,BWFACTOR) 
 %  Power spectrogram with same frequency resolution and scale as human ear.
@@ -8,11 +8,26 @@ function [c,f,t,wsize]=ERBpower(a,sr,cfarray,hopsize,bwfactor)
 %  CFARRAY: array of channel frequencies (default: 1/2 ERB-spaced 30Hz-16 KHz)
 %  HOPSIZE: s - interval between analyses (default: 0.01 s)
 %  BWFACTOR: factor to apply to filter bandwidths (default=1)
+%  PAD:        A vector of values that can be used to pad the beginning of the
+%              signal. This is useful when computing the spectrogram in chunks.
+%              As the first window's centre is aligned with the first sample,
+%              half (or half-1 if an odd sized window) of the window's samples
+%              will be before the first sample. If this argument is not given,
+%              these samples are taken to be 0. Otherwise N samples from the end
+%              of this vector will be taken to be the signal before the 1st
+%              sample where N is half the window length if the window is of even
+%              length or half the window length - 1 if the window is of odd
+%              length.
 %
 %  C: spectrogram matrix
 %  F: Hz - array of channel frequencies
 %  T: s - array of times
-%  WSIZE: samples - window size
+%  FORWARD_WINSIZE:  samples - This is the number of samples after the hop index
+%                    that fit within the window. This might not be equal to the
+%                    window size if the window is not aligned to the hop index
+%                    at the beginning, e.g., when the window's centre is aligned
+%                    with the hop index. This is used to calculate how many hops
+%                    will be taken when calculating the spectrogram.
 %
 %  Spectral resolution is similar to that of the cochlea, temporal resolution is
 %  similar to the ERD of the impulse response of the lowest CF channels (about 20 ms).
@@ -69,13 +84,29 @@ window	= gtwindow(wsize, wsize/(ERD*sr));
 
 
 % pad signal with zeros to align analysis point with window power centroid
+% n is the length of the signal, m is the number of channels
 [m,n]=size(a);
 if m>1; a=a'; if n>1; error('signal should be 1D'); end; n=m; end
-offset	= round(centroid(window.^2));
-a		= [zeros(1,offset), a, zeros(1,wsize-offset)];
+% if window size is odd and window is symmetric, offset = floor(wsize/2), if
+% window size is even, offset = wsize/2
+offset	= ceil(centroid(window.^2))-1;
+if length(pad) > 0
+    pad=(pad(:)).';
+    a = [pad(end-fliplr(0:(offset-1))), a];
+else
+    a = [zeros(1,offset), a];
+end
 
+% last hop index where the window will fit within the end of the signal
+last_index=floor((n-(wsize-offset))/hopsize)*hopsize+1;
+startsamples=(1:hopsize:last_index);
+indices=startsamples+offset;
+fr=zeros(wsize,length(indices));
 % matrix of windowed slices of signal
-[fr,startsamples] = frames(a,wsize,hopsize);
+for( i=1:length(indices))
+    fr(1:wsize,i) = a((indices(i)-offset):(indices(i)+(wsize-offset-1))); 
+end;
+forward_winsize=(wsize-offset);
 nframes = size(fr,2);
 fr		= fr .* repmat(window,1,nframes);  % apply window
 
