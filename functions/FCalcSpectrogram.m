@@ -1,39 +1,42 @@
 function [f_DistrPts_m,f_SupY_v,f_SupX_v,f_ENBW,i_ForwardWinSize] = FCalcSpectrogram(f_Sig_v, ...
-    i_FFTSize, sr_hz, f_Win_v, i_Overlap, w_DistType, f_Pad_v)
+    i_FFTSize, sr_hz, f_Win_v, i_Overlap, w_DistType, f_Pad_v, make_analytic)
 % FCALCSPECTROGRAM - Calculates the spectrogram of a signal
-% f_Sig_v    - The signal to compute a spectrogram of.
-% i_FFTSize  - The length of the FFT.
-% sr_hz      - The sampling rate of the signal
-% f_Win_v    - The window used to do the windowing. This is a vector representing
-%              a window!
-% i_Overlap  - The number of samples of overlap. Stated this way to be compatible
-%              with "specgram". To get the the overlap from the hop size, do:
-%              i_Overlap = length(f_Win_v) - i_HopSize.
-% w_DistType - The kind of distribution produced. See below for the kinds.
-% f_Pad_v    - A vector of values that can be used to pad the beginning of the
-%              signal. This is useful when computing the spectrogram in chunks.
-%              As the first window's centre is aligned with the first sample,
-%              half (or half-1 if an odd sized window) of the window's samples
-%              will be before the first sample. If this argument is not given,
-%              these samples are taken to be 0. Otherwise N samples from the end
-%              of this vector will be taken to be the signal before the 1st
-%              sample where N is half the window length if the window is of even
-%              length or half the window length - 1 if the window is of odd
-%              length.
+% f_Sig_v          - The signal to compute a spectrogram of.
+% i_FFTSize        - The length of the FFT.
+% sr_hz            - The sampling rate of the signal
+% f_Win_v          - The window used to do the windowing. This is a vector
+%                    representing a window!
+% i_Overlap        - The number of samples of overlap. Stated this way to be
+%                    compatible with "specgram". To get the the overlap from the
+%                    hop size, do: i_Overlap = length(f_Win_v) - i_HopSize.
+% w_DistType       - The kind of distribution produced. See below for the kinds.
+% f_Pad_v          - A vector of values that can be used to pad the beginning of
+%                    the signal. This is useful when computing the spectrogram
+%                    in chunks.  As the first window's centre is aligned with
+%                    the first sample, half (or half-1 if an odd sized window)
+%                    of the window's samples will be before the first sample. If
+%                    this argument is not given, these samples are taken to be
+%                    0. Otherwise N samples from the end of this vector will be
+%                    taken to be the signal before the 1st sample where N is
+%                    half the window length if the window is of even length or
+%                    half the window length - 1 if the window is of odd length.
+% make analytic    - If 1, will hilbert transform the signal before doing spectral
+%                    anlaysis, otherwise no transformation carried out beforehand.
 % 
 % Returns 
-% f_DistrPts_m     - the distribution points (not a valid probability distribution!)
+% f_DistrPts_m     - the distribution points (not a valid probability
+%                    distribution!)
 % f_SupY_v         - the normalized frequencies to which the rows of the
 %                    distribution refer.
-% f_SupX_v         - the times to which the columns of the distribution refer (in
-%                    seconds, weird I know)
-% f_ENBW           - The ENBW total over all bins of the window used. This can be
-%                    used to compute the total power in each frame from the
+% f_SupX_v         - the times to which the columns of the distribution refer
+%                    (in seconds, weird I know)
+% f_ENBW           - The ENBW total over all bins of the window used. This can
+%                    be used to compute the total power in each frame from the
 %                    resulting power spectrum: 
 %                       P_total = 2*sum(f_DistrPts_m)./f_ENBW
 %                    The reason for the 2 is because half of the spectrum is
-%                    omitted (frequencies above Nyquist are not stored). Note that
-%                    this only applies to the power spectrum calculation.
+%                    omitted (frequencies above Nyquist are not stored). Note
+%                    that this only applies to the power spectrum calculation.
 % i_ForwardWinSize - This is the number of samples after the hop index that fit
 %                    within the window. This might not be equal to the window
 %                    size if the window is not aligned to the hop index at the
@@ -80,6 +83,10 @@ if length(f_Pad_v) <= 0
     f_Sig_v = [zeros(-1*iLHWinSize,1); f_Sig_v];
 else
     f_Sig_v = [f_Pad_v(end-fliplr(0:(-1*iLHWinSize-1))); f_Sig_v];
+end
+
+if (make_analytic == 1)
+    f_Sig_v=hilbert(f_Sig_v);
 end
 
 % last hop index where the window will fit within the end of the signal

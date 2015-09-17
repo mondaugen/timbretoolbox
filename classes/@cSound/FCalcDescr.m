@@ -1,4 +1,5 @@
-% function [dTEE_s, dAS_s] = FCalcDescr(c, config_s)
+function [dTEE_s, dAS_s] = FCalcDescr(c, config_s)
+% FCALCDESCR
 %
 % Description:
 % ============
@@ -6,8 +7,11 @@
 %
 % INPUTS:
 % =======
-% - c:          Sound object
-% - config_s:
+% c:          Sound object
+% config_s:   Structure containing field
+%             - xcorr_nb_coeff
+%               The number of auto correlation coefficients computed.
+%   
 %
 % OUTPUTS:
 % ========
@@ -20,7 +24,6 @@
 % Permission is only granted to use for research purposes
 %
 
-function [dTEE_s, dAS_s] = FCalcDescr(c, config_s)
 
 if ~isfield(config_s,'xcorr_nb_coeff'),
     config_s.xcorr_nb_coeff = 12;

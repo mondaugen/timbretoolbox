@@ -5,11 +5,12 @@ function c = cSound(varargin)
 %
 % INPUTS:
 % =======
+% A string specifying a path to the soundfile
+%
 % A configuration structure containing the fields
-% w_FileName        - path to the sound file.
 % f_HopSize_sec     - analysis hop size for the time domain descriptors (other
 %                     representations, e.g. FFT, have their own hop size, etc.).
-% f_WinSize_sec      - analysis window size.
+% f_WinSize_sec     - analysis window size.
 % w_Format          - If the soundfile is a raw file, specifies the datatype of
 %                     one sample. This can be any datatype supported by fread.
 %                     To select the raw file type, the filename must end with
@@ -37,7 +38,7 @@ function c = cSound(varargin)
 %                 audiofile  if no sample range was specified.
 % i_Bits        - The number of bits used to represent one sample in the audio
 %                 file. This is only valid for uncompressed (e.g. WAVE, or raw)
-%                 or loss-less compressed audio files (e.g., FLAC), for
+%                 or loss-lessly compressed audio files (e.g., FLAC), for
 %                 lossily compressed audio files (like mp3 or ogg) this will be
 %                 set to 0.
 % i_IncToNext   - If the descriptors are being calculated in chunks, how many

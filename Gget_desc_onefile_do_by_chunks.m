@@ -11,7 +11,11 @@ function [ALLDESC_s,ALLREP_s] = ...
 % INPUTS:
 % =======
 % AUDIOFILENAME - A path to the soundfile. If MATLAB cannot find it, add its
-%                 folder to the search path or specify an absolute path.
+%                 folder to the search path or specify an absolute path.  The
+%                 number of samples, sample datatype, sample rate and number of
+%                 channels in the file must be specified in the config_s.SOUND
+%                 structure with the field names "i_Samples", "w_Format",
+%                 "f_Fs", and "i_Channels" respectively.
 % do_s          - A structure containing the fields b_TEE, b_STFTmag, b_STFTpow,
 %                 b_Harmonic, b_ERBfft, b_ERBgam. If you would like their
 %                 descriptors to be computed, give these fields the value 1,
@@ -21,7 +25,7 @@ function [ALLDESC_s,ALLREP_s] = ...
 %                 structures configuring how to analyse the the sound to compute
 %                 the descriptors. See the FCalcDescr function files for each
 %                 descriptor to see what parameters are available. These fields
-%                 are allowed to conatain empty structures. In that case their
+%                 are allowed to contain empty structures.  In that case their
 %                 fields are given default values. The only exception is the
 %                 SOUND structure when a raw file is being read. See cSound.m
 %                 for what fields must be specified.
@@ -31,7 +35,63 @@ function [ALLDESC_s,ALLREP_s] = ...
 %
 % OUTPUTS:
 % ========
-% - ALLDESC_s(:).family_name(:).descriptor_name(:)
+% ALLDESC_s     - A structure containing the fields
+%                   - TEE
+%                   - AS
+%                   - STFTmag
+%                   - STFTpow
+%                   - Harmonic
+%                   - ERBfft
+%                   - ERBgam
+%               - Each field's value is a structure containing fields relevant
+%               to the description implied by the name. There are generally two
+%               kinds of descriptor generating algorithms: one computes a value
+%               based on the analysis of a whole soundfile. We will call these
+%               "global descriptors". Others compute a
+%               series of values where each value is computed from a (usually
+%               windowed) frame consisting of a subsection of the soundfile, we
+%               will call these "time-varying descriptors".
+%               In the case of a soundfile analysed in chunks, there are
+%               actually two levels of frames. The larger frames consist of the
+%               samples that are read in from disk, usually in the 10s to 100s
+%               of thousounds of samples. The smaller frames are chosen by each
+%               descriptor's analysis algorithm based on the parameters such as
+%               "window size" or "overlap" and are usually in the 100s to 1000s
+%               of samples. So a number of smaller frames usually fit into a
+%               large frame. The results of the analysis on a large frame are
+%               concatenated with those of the last large frame. For all
+%               descriptors (TODO: except for ERB), some values from the last
+%               large frames are "doctored" so that small frames falling at the
+%               beginning or end of the large frame always have samples to use
+%               for computation (except at the beginning or end of the
+%               soundfile, of course). In this way, time-varying descriptors
+%               computed "in chunks" do not differ from those computed from an
+%               entire soundfile read into memory from disk. However, global
+%               descriptors computed from chunks of soundfile do differ from
+%               those computed from an entire soundfile. Probably the global
+%               descriptors whose computation is managed with this function are
+%               not admissable metrics.  Nevertheless, they are computed and
+%               concatenated with the descriptor computed from the last large
+%               frame. One will see in some fields of the strucutres containing
+%               global descriptors (e.g., TEE) arrays of values for global
+%               descriptors. Above is an explanation why.
+%
+% ALLREP_s      - A structure containing the fields:
+%                   - STFTmag
+%                        whose value is cFFTRep
+%                   - STFTpow
+%                       whose value is cFFTRep
+%                   - Harmonic
+%                       whose value is cHarmRep
+%                   - ERBfft
+%                       whose value is cERBRep
+%                   - ERBgam
+%                       whose value is cERBRep
+%
+%               These values are objects containing analysis data which was used
+%               to compute the descriptors above. See the .m file of each class
+%               for information on the fields it contains, or call struct() on
+%               the class.
 %
 % Copyright (c) 2011 IRCAM/McGill, All Rights Reserved.
 % Permission is only granted to use for research purposes

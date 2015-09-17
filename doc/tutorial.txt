@@ -1,0 +1,7 @@
+How to get started with Timbre Toolbox
+--------------------------------------
+
+See file get_descriptors_example.m
+
+
+

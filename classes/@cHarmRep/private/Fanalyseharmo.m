@@ -124,10 +124,8 @@ else
     fenetre_v   = config_s.f_Win_v;
 end;
 
-% make signal analytic before doing spectral analysis
-f_Sig_v         = hilbert(f_Sig_v);
 [B_m, F_v, T_v, f_ENBW, i_ForwardWinSize] = ...
-    FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n, 'mag', f_Pad_v);
+    FCalcSpectrogram(f_Sig_v, N, sr_hz, fenetre_v, L_n-STEP_n, 'mag', f_Pad_v, 1);
 
 B_m				= abs(B_m);
 T_v				= T_v+L_sec/2;

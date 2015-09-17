@@ -212,16 +212,15 @@ d.f_SampRateY = config_s.f_SampRateY;
 % === get input sig. (make analytic)
 f_Sig_v = FGetSignal(oSnd);
 c.i_Len=FGetLen(oSnd);
-if isreal(f_Sig_v), f_Sig_v = hilbert(f_Sig_v); end
  
 if (nargin > 2)
     [d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, d.f_ENBW, i_ForwardWinSize] = FCalcSpectrogram(f_Sig_v, ...
         c.i_FFTSize, config_s.f_sr_hz, c.f_Win_v, c.i_WinSize - c.i_HopSize, ...
-        config_s.w_DistType, f_Pad_v);
+        config_s.w_DistType, f_Pad_v, 1);
 else
     [d.f_DistrPts_m, d.f_SupY_v, d.f_SupX_v, d.f_ENBW, i_ForwardWinSize] = FCalcSpectrogram(f_Sig_v, ...
         c.i_FFTSize, config_s.f_sr_hz, c.f_Win_v, c.i_WinSize - c.i_HopSize, ...
-        config_s.w_DistType);
+        config_s.w_DistType,[],1);
 end
 c.i_IncToNext=(floor((c.i_Len - i_ForwardWinSize)/c.i_HopSize + 1)*c.i_HopSize);
 
