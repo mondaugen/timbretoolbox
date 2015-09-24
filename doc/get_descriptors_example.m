@@ -51,13 +51,13 @@ config_s.Harmonic.w_WinType = 'hamming';
 config_s.ERBfft = struct();	
 % example of how to specify parameter
 config_s.ERBfft.f_Exp = 1/8;
-% The parameter w_Method will be overridden, so specifying it is futile.
+% The parameter w_Method will be overridden, so specifying it here is futile.
 % See @cERBRep/cERBRep.m to see parameters that can be specified.
 
 config_s.ERBgam = struct();
 % example of how to specify parameter
 config_s.ERBgam.f_Exp = 1/8;
-% The parameter w_Method will be overridden, so specifying it is futile.
+% The parameter w_Method will be overridden, so specifying it here is futile.
 % See @cERBRep/cERBRep.m to see parameters that can be specified.
 
 do_s = struct();
@@ -71,7 +71,7 @@ do_s.b_Harmonic = 1;
 do_s.b_ERBfft = 1;
 do_s.b_ERBgam = 1;
 
-% Compute descriptors
+% Compute descriptors and representations
 [ALLDESC_s, ALLREP_s] = Gget_desc_onefile_do_by_chunks(filename,do_s,config_s);
 
 % Example of how to plot some representation information

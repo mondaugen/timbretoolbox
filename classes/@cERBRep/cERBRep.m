@@ -8,6 +8,17 @@
 % =======
 % (1) cSound object (mandatory)
 % (2) configuration structure (optional)
+% The configuration structure contains the following fields. If any of the
+% fields are not specified, they are calculated or given default values.
+% w_Method      -- The method that is used for doing the transformation. It can
+%                  be one of 'fft' or 'gammatone'.
+% f_HopSize_sec -- The distance between the centres of two analysis windows in
+%                  seconds. The default is the number of seconds that would give
+%                  a distance of 256 samples at 44100 Hz sample rate.
+% i_HopSize     -- The distance between the centres of two analysis windows in
+%                  samples. 
+% f_Exp         -- Exponent to obtain loudness from power. See
+%                  private/ERBspect.m to see more details. Default is 1/4.
 %
 % OUTPUTS:
 % ========
@@ -45,9 +56,17 @@ if nargin > 1
 		oSnd				= varargin{1};
 		config_s 			= varargin{2};
 		% check completness of config.
-		if ~isfield( config_s, 'w_Method'),		config_s.w_Method = 'fft';			end
-		if ~isfield( config_s, 'i_HopSize'),	config_s.f_HopSize_sec = 256/44100;	end
-		config_s.i_HopSize	= round(config_s.f_HopSize_sec * FGetSampRate(oSnd));
+		if ~isfield( config_s, 'w_Method'),
+            config_s.w_Method = 'fft';
+        end
+        % If both f_HopSize_sec and i_HopSize are specified, i_HopSize takes
+        % precident, that is, it will be the hop size that is actually used.
+        if ~isfield( config_s, 'f_HopSize_sec'),
+            config_s.f_HopSize_sec = 256/44100;
+        end
+		if ~isfield( config_s, 'i_HopSize'),
+            config_s.i_HopSize = round(config_s.f_HopSize_sec * FGetSampRate(oSnd));
+        end
 		if ~isfield( config_s, 'f_Exp'),		config_s.f_Exp = 1/4;				end
 end
 if nargin > 2
