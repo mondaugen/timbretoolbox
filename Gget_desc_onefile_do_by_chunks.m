@@ -127,8 +127,6 @@ ALLDESC_s=struct();
 ALLREP_s=struct();
 
 % Specify respective analysis methods for ERB.
-config_s.ERBfft.w_Method	= 'fft';
-config_s.ERBgam.w_Method	= 'gammatone';
 
 if( do_s.b_TEE )
     while (1)
@@ -140,7 +138,7 @@ if( do_s.b_TEE )
             rangeMax=nSamples;
         end;
         config_s.SOUND.i_SampleRange_v=[rangeMin,rangeMax];
-        Snd_o	= cSound(AUDIOFILENAME,config_s.SOUND);
+        Snd_o = cSound(AUDIOFILENAME,config_s.SOUND);
         [TEE,AS]=FCalcDescr(Snd_o,config_s.TEE);
         if isfield(ALLDESC_s,'TEE') && isfield(ALLDESC_s,'AS'),
             ALLDESC_s.TEE=[ALLDESC_s.TEE,cTEEDescr(TEE)];
@@ -291,6 +289,7 @@ if( do_s.b_ERBfft )
         end;
         config_s.SOUND.i_SampleRange_v=[rangeMin,rangeMax];
         Snd_o	= cSound(AUDIOFILENAME,config_s.SOUND);
+        config_s.ERBfft.w_Method	= 'fft';
         if isfield(ALLREP_s,'ERBfft')
             % If field already exists, pad analysis with the last chunk read in
             ERB1_o=cERBRep(Snd_o,config_s.ERBfft,f_Pad_v);
@@ -329,10 +328,12 @@ if( do_s.b_ERBgam )
         end;
         config_s.SOUND.i_SampleRange_v=[rangeMin,rangeMax];
         Snd_o	= cSound(AUDIOFILENAME,config_s.SOUND);
-	    ERB2_o					= cERBRep(Snd_o, config_s.ERBgam, []);
+        config_s.ERBgam.w_Method	= 'gammatone';
         if isfield(ALLREP_s,'ERBgam')
+            ERB2_o = cERBRep(Snd_o, config_s.ERBgam, f_Pad_v);
             ALLREP_s.ERBgam=[ALLREP_s.ERBgam,ERB2_o];
         else
+            ERB2_o = cERBRep(Snd_o, config_s.ERBgam, []);
             ALLREP_s.ERBgam=ERB2_o;
         end
 	    ERBgam 		= FCalcDescr(ERB2_o);
@@ -344,6 +345,12 @@ if( do_s.b_ERBgam )
         if rangeMax==nSamples
             break
         end
+        i_IncToNext=FGetIncToNext(ERB2_o);
+        % Get signal so we can pad it next iteration
+        f_Pad_v=FGetSignal(Snd_o);
+        % The signal may be too long, trim it down to one index before the index
+        % to which the chunkPoint is incremented.
+        f_Pad_v=f_Pad_v(1:i_IncToNext);
         chunkPoint.ERBgam=chunkPoint.ERBgam+FGetIncToNext(ERB2_o);
     end
 end

@@ -1,14 +1,16 @@
-% This is an example of how to compute decscriptors by carrying out analyses on
-% subsections of the soundfile read off the disk. See
-% Gget_desc_onefile_do_by_chunks.m to see the pros and cons of this method.
+% This is an example of how to compute decscriptors by carrying out one analysis on
+% an entire soundfile.
+% The maximum file size for a machine with 8 GB of ram is about 5 seconds, but
+% this depends on the hop size, windowing, sample rate and other parameters.
+% Gget_desc_onefile.m to see the pros and cons of this method.
 % To run this example, make sure the path to this file is included in the MATLAB
 % path and do
 %
-% >> run 'get_descriptors_example.m'
+% >> run 'get_descriptors_global_example.m'
 %
 % In a MATLAB prompt.
 
-filename='example.wav';
+filename='example_short.wav';
 
 disp(sprintf('Filename: %s\n',filename));
 
@@ -75,7 +77,7 @@ do_s.b_ERBfft = 1;
 do_s.b_ERBgam = 1;
 
 % Compute descriptors and representations
-[ALLDESC_s, ALLREP_s] = Gget_desc_onefile_do_by_chunks(filename,do_s,config_s);
+[ALLDESC_s, ALLREP_s] = Gget_desc_onefile(filename,do_s,config_s);
 
 % Example of how to plot some representation information
 % Here we plot the partials discovered by the harmonic analysis

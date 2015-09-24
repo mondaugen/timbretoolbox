@@ -87,6 +87,8 @@ window	= gtwindow(wsize, wsize/(ERD*sr));
 % n is the length of the signal, m is the number of channels
 [m,n]=size(a);
 if m>1; a=a'; if n>1; error('signal should be 1D'); end; n=m; end
+[m_pad,n_pad]=size(pad);
+if m_pad>1; pad=pad'; if n_pad>1; error('signal should be 1D'); end; n_pad=m_pad; end
 % if window size is odd and window is symmetric, offset = floor(wsize/2), if
 % window size is even, offset = wsize/2
 offset	= ceil(centroid(window.^2))-1;

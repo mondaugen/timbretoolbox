@@ -63,7 +63,13 @@ if nargin < 3 | isempty(method),	method = 'FFT'; end
 if nargin < 4 | isempty(exponent),	exponent = 1/4; end;           % Hartmann (1997)
 
 % apply outer/middle ear filter:
-a		= outmidear(a,sr);
+pad = pad(:);
+l_pad = length(pad);
+l_a   = length(a);
+% account for padded signal as impulse response from this will influence "a"
+a_pad		= outmidear([pad; a],sr);
+pad = a_pad(1:l_pad);
+a   = a_pad((l_pad+1):end);
 [m,n]	= size(a);
 
 % defaults (see ERBpower)
@@ -75,7 +81,7 @@ switch lower(method)
 	case 'fft'
         [c,f,t,forward_wsize] = ERBpower(a,sr,cfarray,hopsize,bwfactor,pad);
 	case 'gammatone'
-		[c,f,t] = ERBpower2(a,sr,cfarray,hopsize,bwfactor);
+		[c,f,t] = ERBpower2(a,sr,cfarray,hopsize,bwfactor,pad);
         forward_wsize=0;
 	otherwise
 		error('unexpected method');
@@ -87,7 +93,7 @@ c = c.^exponent;          % instantaneous partial loudness
 % spectral centroid
 troids		= centroid(c);
 loud		= sum(c);								% instantaneous loudness
-troid		= sum(troids.*loud)/sum(loud);			% weighted average
+troid		= sum(troids.*loud)/sum(loud)			% weighted average
 p.centroid	= interp1((1:nchans), f, troid);		% to hz
 p.centroids = interp1((1:nchans), f, troids);		% to hz
 
