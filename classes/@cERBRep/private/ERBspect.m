@@ -91,11 +91,12 @@ c = c.^exponent;          % instantaneous partial loudness
 [nchans,nframes]=size(c);
 
 % spectral centroid
-troids		= centroid(c);
-loud		= sum(c);								% instantaneous loudness
-troid		= sum(troids.*loud)/sum(loud)			% weighted average
-p.centroid	= interp1((1:nchans), f, troid);		% to hz
-p.centroids = interp1((1:nchans), f, troids);		% to hz
+% TODO: This part broken because the struct "p" is not in the argument list.
+%troids		= centroid(c);
+%loud		= sum(c);								% instantaneous loudness
+%troid		= sum(troids.*loud)/sum(loud)			% weighted average
+%p.centroid	= interp1((1:nchans), f, troid);		% to hz
+%p.centroids = interp1((1:nchans), f, troids);		% to hz
 
 p.cochleagram = c;
 

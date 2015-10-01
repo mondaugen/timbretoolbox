@@ -57,14 +57,12 @@ l_pad = length(pad);
 
 % apply gammatone filterbank
 b = gtfbank([pad a], sr, cfarray, bwfactor);
-
 % instantaneous power
 b = fbankpwrsmooth(b, sr, cfarray);
-
 % smooth with a hopsize window, downsample
 b			= rsmooth(b',sr*hopsize,1,1)';
 b			= max(b,0); % remove negative gremlins that rsmooth is liable to produce
-b           = b((l_pad+1):end);
+b           = b(:,(l_pad+1):end);
 [m,n]		= size(b);
 nframes		= floor(n/(sr*hopsize));
 startsamples= round(1+(0:nframes-1)*hopsize*sr); % array of frame start samples
