@@ -100,3 +100,11 @@ plot((1:length(ALLDESC_s.STFTpow.SpecSpread))-1,ALLDESC_s.STFTpow.SpecSpread);
 title('Spectral spread (from FFT Representation)');
 ylabel('Spectral spread');
 xlabel('Frame index (starting at 0)');
+
+% Save descriptors and representations to files
+save('/tmp/alldesc.mat','ALLDESC_s');
+save('/tmp/allrep.mat','ALLREP_s');
+
+% Load descriptors from files
+%load('/tmp/alldesc.mat');
+%load('/tmp/allrep.mat');
