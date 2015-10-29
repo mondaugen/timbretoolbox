@@ -75,7 +75,7 @@ do_s.b_ERBfft = 1;
 do_s.b_ERBgam = 1;
 
 % Compute descriptors and representations
-[ALLDESC_s, ALLREP_s] = Gget_desc_onefile_do_by_chunks(filename,do_s,config_s);
+[ALLDESC_s, ALLREP_s] = Gget_desc_onefile_do_by_chunks(filename,do_s,config_s,131072,0);
 
 % Example of how to plot some representation information
 % Here we plot the partials discovered by the harmonic analysis

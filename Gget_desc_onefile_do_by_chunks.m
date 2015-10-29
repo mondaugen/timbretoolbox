@@ -1,5 +1,5 @@
 function [ALLDESC_s,ALLREP_s] = ...
-    Gget_desc_onefile_do_by_chunks(AUDIOFILENAME, do_s, config_s, i_ChunkSize)
+    Gget_desc_onefile_do_by_chunks(AUDIOFILENAME, do_s, config_s, i_ChunkSize, b_normalized)
 % GGET_DESC_ONEFILE_DO_BY_CHUNKS:
 % ===============================
 % Performs descriptor computation. This function is best used for long files as
@@ -31,6 +31,10 @@ function [ALLDESC_s,ALLREP_s] = ...
 %                 for what fields must be specified.
 % i_ChunkSize   - The number of samples to be read each time the disk is
 %                 accessed.
+% b_normalized    - If 1, values that have units of frequency are given in
+%                 the range [0,1]. 1 corresponding to the sampling rate.
+%                 Otherwise they are given in units of Hz. If not supplied,
+%                 the default is that these values are not normalized.
 %                 
 %
 % OUTPUTS:
@@ -120,6 +124,11 @@ currentSample = 1;
 if(nargin() < 4),
     i_ChunkSize=32768;
 end;
+
+if(nargin() < 5)
+    b_normalized=0;
+end
+
 chunkPoint=struct('TEE',1,'STFTmag',1,'STFTpow',1,...
             'Harmonic',1,'ERBfft',1,'ERBgam',1);
 
@@ -359,3 +368,7 @@ flds=fields(ALLDESC_s);
 for k=1:length(flds),
     ALLDESC_s.(flds{k})=struct(ALLDESC_s.(flds{k}));
 end;
+
+if (b_normalized ~= 1)
+    ALLDESC_s=Gdesc_make_freq_hz(ALLDESC_s,Snd_o);
+end
