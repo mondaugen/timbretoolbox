@@ -18,7 +18,7 @@
 % Permission is only granted to use for research purposes
 %
 
-function [ALLTM_s]	= Gget_temporalmodeling_onefile(ALLDESC_s, do_affiche)
+function [ALLTM_s]	= Gget_temporalmodeling_onefile(ALLDESC_s)
 
 if nargin<2, do_affiche=0; end
 
@@ -40,24 +40,7 @@ for f1=1:length(fieldname1_c)
 					%ALLTM_s.([name '_std'])	= std(value, [], 2);
 					ALLTM_s.([name '_median']) = median(value, 2);
 					ALLTM_s.([name '_iqr'])	= 0.7413*iqr(value, 2);
-					
-                    % +++++++++++++++++++++++++++++++++++++
-					if do_affiche
-						subplot(122)
-						plot(value, 'linewidth', 2); ax=axis;
-						aaa_c = {'_median','_iqr'};
-						for a=1:length(aaa_c)
-							plotvalue = ALLTM_s.([name aaa_c{a}]);
-							hold on, 
-							plot([ax(1) ax(2)], plotvalue*[1 1], 'k'); 
-							if length(plotvalue)==1, text(ax(1), plotvalue, strrep(aaa_c{a},'_','-')); end
-							hold off
-						end
-						title(strrep(name,'_','-'))
-						Fpause
-					end
-					% +++++++++++++++++++++++++++++++++++++
-                    
+
 				else
 					ALLTM_s.(name) = value;
 				end

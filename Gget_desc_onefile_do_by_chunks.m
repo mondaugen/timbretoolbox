@@ -1,7 +1,7 @@
 function [ALLDESC_s,ALLREP_s] = ...
     Gget_desc_onefile_do_by_chunks(AUDIOFILENAME, do_s, config_s, i_ChunkSize, b_normalized)
-% GGET_DESC_ONEFILE_DO_BY_CHUNKS:
-% ===============================
+% GGET_DESC_ONEFILE_DO_BY_CHUNKS
+% ==============================
 % Performs descriptor computation. This function is best used for long files as
 % it reads subsections of the file from disc to make the computation of the
 % descriptors possible with limited memory. The downside of this is that 
@@ -31,7 +31,7 @@ function [ALLDESC_s,ALLREP_s] = ...
 %                 for what fields must be specified.
 % i_ChunkSize   - The number of samples to be read each time the disk is
 %                 accessed.
-% b_normalized    - If 1, values that have units of frequency are given in
+% b_normalized  - If 1, values that have units of frequency are given in
 %                 the range [0,1]. 1 corresponding to the sampling rate.
 %                 Otherwise they are given in units of Hz. If not supplied,
 %                 the default is that these values are not normalized.

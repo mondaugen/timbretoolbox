@@ -77,7 +77,7 @@ do_s.b_ERBfft = 1;
 do_s.b_ERBgam = 1;
 
 % Compute descriptors and representations
-[ALLDESC_s, ALLREP_s] = Gget_desc_onefile(filename,do_s,config_s);
+[ALLDESC_s, ALLREP_s] = Gget_desc_onefile(filename,do_s,config_s,0);
 
 % Example of how to plot some representation information
 % Here we plot the partials discovered by the harmonic analysis
@@ -102,3 +102,6 @@ plot((1:length(ALLDESC_s.STFTpow.SpecSpread))-1,ALLDESC_s.STFTpow.SpecSpread);
 title('Spectral spread (from FFT Representation)');
 ylabel('Spectral spread');
 xlabel('Frame index (starting at 0)');
+
+% Compute other statistics from descriptors (median, inter-quartile range)
+ALLDESCSTATS_s=Gget_statistics(ALLDESC_s);

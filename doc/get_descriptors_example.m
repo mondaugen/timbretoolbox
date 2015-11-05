@@ -108,3 +108,6 @@ save('/tmp/allrep.mat','ALLREP_s');
 % Load descriptors from files
 %load('/tmp/alldesc.mat');
 %load('/tmp/allrep.mat');
+
+% Compute other statistics from descriptors (median, inter-quartile range)
+ALLDESCSTATS_s=Gget_statistics(ALLDESC_s);
