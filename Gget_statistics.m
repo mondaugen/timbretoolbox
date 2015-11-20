@@ -19,6 +19,7 @@ computed_stats.median     = 'median(%s)';
 computed_stats.iqr        = 'iqr(%s)';
 % See note in _doc_timbretoolbox.txt on scaled inter-quartile range
 computed_stats.iqr_normal = '0.7413*iqr(%s)';
+computed_stats.mean       = 'mean(%s)';
 
 for fname_n=fieldnames(ALLDESC_s).'
     for stat_name=fieldnames(computed_stats)'
