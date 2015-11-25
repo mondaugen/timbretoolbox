@@ -44,8 +44,13 @@ f_Den			= i_NumHarm .* sum(c.PartTrax_s(i).f_Freq_v.^2) - sum(c.PartTrax_s(i).f_
 f_Slope			= f_Num ./ f_Den;
 
 % === Spectral decrease (according to peeters report)
-f_Num			= sum( (c.PartTrax_s(i).f_Ampl_v(2:i_NumHarm)' - c.PartTrax_s(i).f_Ampl_v(1)) ./ [1:i_NumHarm-1] );
-f_Den			= sum( c.PartTrax_s(i).f_Ampl_v(2:i_NumHarm) );
+if (i_NumHarm < 5)
+    f_Num=0;
+    f_Den=0;
+else
+    f_Num			= sum( (c.PartTrax_s(i).f_Ampl_v(2:i_NumHarm)' - c.PartTrax_s(i).f_Ampl_v(1)) ./ [1:i_NumHarm-1] );
+    f_Den			= sum( c.PartTrax_s(i).f_Ampl_v(2:i_NumHarm) );
+end
 f_SpecDecr		= (f_Num ./ (f_Den+eps));	% === divide by zero
 
 % === Spectral roll-off

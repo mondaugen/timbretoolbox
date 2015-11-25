@@ -24,9 +24,8 @@
 %                          analyses when calculating the spectrogram.
 %   i_FFTSize           -- The length of the FFT in samples. If this is not
 %                          specified the default is at least 4 times the window
-%                          size in samples. This is to give bettwe frequency
-%                          resolution for the harmonic search. Just to give you
-%                          an idea of an FFT size to choose.
+%                          size in samples. This is to give better frequency
+%                          resolution for the harmonic search.
 %   w_WinType           -- A string specifying a window to use. This must be a
 %                          function known to MATLAB that takes an integer
 %                          indicating the length of the window vector to return,

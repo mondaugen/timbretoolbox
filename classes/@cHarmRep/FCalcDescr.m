@@ -45,25 +45,40 @@ for (i = 1:i_EndFrm)
 
 	% === Inharmonicity
 	i_NumHarm	= length( c.PartTrax_s(i).f_Ampl_v );
-	if( i_NumHarm < 5 ), f_InHarm = []; continue; end;
-	f_Harms_v	= c.f_F0_v(i) .* [1:i_NumHarm]';
-	f_InHarm	= sum( abs(c.PartTrax_s(i).f_Freq_v - f_Harms_v) .* (c.PartTrax_s(i).f_Ampl_v .^ 2) ) ./ (sum( c.PartTrax_s(i).f_Ampl_v .^ 2 )+eps) .* 2 / c.f_F0_v(i);
-
-	% === Harmonic spectral deviation
-	f_SpecEnv_v					= []; % === clear prev result
-	f_SpecEnv_v(1)				= c.PartTrax_s(i).f_Ampl_v(1);
-	f_SpecEnv_v(2:i_NumHarm-1)	= ( c.PartTrax_s(i).f_Ampl_v(1:end-2) + c.PartTrax_s(i).f_Ampl_v(2:end-1) + c.PartTrax_s(i).f_Ampl_v(3:end) ) / 3;
-	f_SpecEnv_v(i_NumHarm)		= ( c.PartTrax_s(i).f_Ampl_v(end-1) + c.PartTrax_s(i).f_Ampl_v(end) ) / 2;
-	f_HarmDev					= sum( abs( c.PartTrax_s(i).f_Ampl_v - f_SpecEnv_v' ) ) ./ i_NumHarm;
-
-	% === Odd to even harmonic ratio
-	f_OddEvenRatio	= sum( c.PartTrax_s(i).f_Ampl_v(1:2:end).^2 ) ./ (sum( c.PartTrax_s(i).f_Ampl_v(2:2:end).^2 )+eps);
-
-	% === Harmonic tristimulus
-	f_TriStim_v(1,1)	= c.PartTrax_s(i).f_Ampl_v(1)				/ (sum(c.PartTrax_s(i).f_Ampl_v)+eps);	 
-	f_TriStim_v(2,1)	= sum(c.PartTrax_s(i).f_Ampl_v([2 3 4]))	/ (sum(c.PartTrax_s(i).f_Ampl_v)+eps);	 
-	f_TriStim_v(3,1)	= sum(c.PartTrax_s(i).f_Ampl_v([5:end]))	/ (sum(c.PartTrax_s(i).f_Ampl_v)+eps);	 
-
+	if (i_NumHarm < 5)
+        f_Energy = 0;		 
+        f_HarmErg = 0;
+        f_NoiseErg = 0;
+        f_Noisiness = 0;
+        f_InHarm = 0;
+        f_TriStim_v(1,1) = 0;
+        f_TriStim_v(2,1) = 0;
+        f_TriStim_v(3,1) = 0;
+        f_HarmDev = 0;
+        f_OddEvenRatio = 0;
+        f_Pow = 0;
+        f_HarmPow = 0;
+        f_NoisePow = 0;
+    else
+        f_Harms_v	= c.f_F0_v(i) .* [1:i_NumHarm]';
+        f_InHarm	= sum( abs(c.PartTrax_s(i).f_Freq_v - f_Harms_v) .* (c.PartTrax_s(i).f_Ampl_v .^ 2) ) ./ (sum( c.PartTrax_s(i).f_Ampl_v .^ 2 )+eps) .* 2 / c.f_F0_v(i);
+        
+        % === Harmonic spectral deviation
+        f_SpecEnv_v					= []; % === clear prev result
+        f_SpecEnv_v(1)				= c.PartTrax_s(i).f_Ampl_v(1);
+        f_SpecEnv_v(2:i_NumHarm-1)	= ( c.PartTrax_s(i).f_Ampl_v(1:end-2) + c.PartTrax_s(i).f_Ampl_v(2:end-1) + c.PartTrax_s(i).f_Ampl_v(3:end) ) / 3;
+        f_SpecEnv_v(i_NumHarm)		= ( c.PartTrax_s(i).f_Ampl_v(end-1) + c.PartTrax_s(i).f_Ampl_v(end) ) / 2;
+        f_HarmDev					= sum( abs( c.PartTrax_s(i).f_Ampl_v - f_SpecEnv_v' ) ) ./ i_NumHarm;
+        
+        % === Odd to even harmonic ratio
+        f_OddEvenRatio	= sum( c.PartTrax_s(i).f_Ampl_v(1:2:end).^2 ) ./ (sum( c.PartTrax_s(i).f_Ampl_v(2:2:end).^2 )+eps);
+        
+        % === Harmonic tristimulus
+        f_TriStim_v(1,1)	= c.PartTrax_s(i).f_Ampl_v(1)				/ (sum(c.PartTrax_s(i).f_Ampl_v)+eps);
+        f_TriStim_v(2,1)	= sum(c.PartTrax_s(i).f_Ampl_v([2 3 4]))	/ (sum(c.PartTrax_s(i).f_Ampl_v)+eps);
+        f_TriStim_v(3,1)	= sum(c.PartTrax_s(i).f_Ampl_v([5:end]))	/ (sum(c.PartTrax_s(i).f_Ampl_v)+eps);
+    end
+    
 	% === Build output structure
 	dFFTHarm_s.FrameErg(i)	= f_Energy;		 
 	dFFTHarm_s.HarmErg(i)		= f_HarmErg;

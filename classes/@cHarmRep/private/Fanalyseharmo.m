@@ -150,9 +150,8 @@ if size(f0_bp, 1)==0
     % If sound not harmonic, we just fill in with 0s as fundamental estimate,
     % otherwise this will cause there to be misalignment if the sound
     % analysed is a chunk of a whole sound.
-	f0_hz_v			= zeros(1,nb_frame);
-	PartTrax_s(1:nb_frame).f_Freq_v	= 0;
-	PartTrax_s(1:nb_frame).f_Ampl_v	= 0;
+    f0_hz_v			= zeros(1,nb_frame);
+    PartTrax_s=repmat(struct('f_Freq_v',0,'f_Ampl_v',0),[1 nb_frame]);
 	return;
 end
 
