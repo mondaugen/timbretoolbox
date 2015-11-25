@@ -48,7 +48,7 @@ if isempty(f)
 	f=freqs;
 	mafs=datamaf;
 else
-	[mafs] = interp1(freqs,datamaf,f,'cubic');
+	[mafs] = interp1(freqs,datamaf,f,'pchip');
 end
 
 
