@@ -70,8 +70,9 @@ switch nargin
 			return;
 		end;
 
-		s_Config.f_HopSize_sec	= 128/44100;		% === is 0.0029s at 44100Hz
-		s_Config.f_WinSize_sec	= 1024/44100;		% === is 0.0232s at 44100Hz
+        % see Peeters (2011) for defaults
+		s_Config.f_HopSize_sec	= 0.0029;
+		s_Config.f_WinSize_sec	= 0.0232;
 
 	case 2
 		if( isa( varargin{1}, 'char' ) )
@@ -85,10 +86,10 @@ switch nargin
 		s_Config = varargin{2};
 
         if ~isfield(s_Config,'f_HopSize_sec'),
-            s_Config.f_HopSize_sec	= 128/44100;		% === is 0.0029s at 44100Hz
+            s_Config.f_HopSize_sec	= 0.0029;
         end;
         if ~isfield(s_Config,'f_WinSize_sec'),
-            s_Config.f_WinSize_sec	= 1024/44100;		% === is 0.0232s at 44100Hz
+            s_Config.f_WinSize_sec	= 0.0232;
         end;
 
 	otherwise

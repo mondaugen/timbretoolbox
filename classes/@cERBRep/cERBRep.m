@@ -61,8 +61,9 @@ if nargin > 1
         end
         % If both f_HopSize_sec and i_HopSize are specified, i_HopSize takes
         % precident, that is, it will be the hop size that is actually used.
+        % Default 5.8 ms
         if ~isfield( config_s, 'f_HopSize_sec'),
-            config_s.f_HopSize_sec = 256/44100;
+            config_s.f_HopSize_sec = 0.0058;
         end
 		if ~isfield( config_s, 'i_HopSize'),
             config_s.i_HopSize = round(config_s.f_HopSize_sec * FGetSampRate(oSnd));

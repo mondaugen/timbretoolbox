@@ -148,13 +148,13 @@ if (nargin > 1)
             config_s.i_HopSize = round(config_s.f_HopSize_sec*config_s.f_sr_hz);
         end;
         
-         % Default window size ends up being 1025 samples
+         % Default window size 23.2 ms
         if ~isfield( config_s, 'f_WinSize_sec'), 
-            config_s.f_WinSize_sec	= 1025/config_s.f_sr_hz;
+            config_s.f_WinSize_sec	= 0.0232;
         end;
-        % Default hop size ends up being 256 samples
+        % Default hop size 5.8 ms
         if ~isfield( config_s, 'f_HopSize_sec'),
-            config_s.f_HopSize_sec	= 256/config_s.f_sr_hz;
+            config_s.f_HopSize_sec	= 0.0058;
         end;
         if ~isfield( config_s, 'i_WinSize'),
             config_s.i_WinSize	= round(config_s.f_WinSize_sec*config_s.f_sr_hz);
