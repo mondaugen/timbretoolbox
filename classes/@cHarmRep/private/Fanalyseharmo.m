@@ -147,6 +147,7 @@ else									f0_bp = [];
 end
 
 if size(f0_bp, 1)==0
+    warning('Sound deemed not harmonic. Setting f0 estimate to 0.');
     % If sound not harmonic, we just fill in with 0s as fundamental estimate,
     % otherwise this will cause there to be misalignment if the sound
     % analysed is a chunk of a whole sound.
