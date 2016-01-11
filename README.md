@@ -16,6 +16,19 @@ Decompress the archive to some location.
 
 Add this location to path, e.g., by using the MATLAB browser, left-clicking on the extracted directory and then right-clicking on it (now that it is highlighted) and finally clicking Add to Path -> Selected Folders and Subfolders.
 
+A quick way to do this using the command-line is:
+
+``
+>> addpath(genpath('/path/to/timbretoolbox'));
+``
+
+Compile the mex files. Currently there is only one and must be compiled as
+follows:
+
+``
+>> mex ./classes/@cERBRep/private/rsmooth.c -outdir ./classes/@cERBRep/private/
+``
+
 Make another directory (not inside the “timbretoolbox…” directory) that you will do work in.
 
 Copy the scripts from “timbretoolbox/doc/“ to this directory, or simply use them as a guide for writing new scripts.
