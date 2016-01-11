@@ -46,10 +46,9 @@ function [c] = cERBRep(varargin)
 if nargin == 1
 		oSnd = varargin{1};
 		% use default settings
-		config_s.w_Method		= 'fft';% other option: w_Method = 'gammatone';
-		config_s.f_HopSize_sec	= 256/44100;
+        config_s=FGetDefaultConfig();
+		config_s.f_HopSize_sec	= FGetSampRate(oSnd);
 		config_s.i_HopSize		= round(config_s.f_HopSize_sec * FGetSampRate(oSnd));
-		config_s.f_Exp			= 1/4;
 end
 if nargin > 1
 		% use input config structure

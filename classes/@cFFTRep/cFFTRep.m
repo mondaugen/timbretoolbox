@@ -99,21 +99,8 @@ function [c] = cFFTRep(varargin)
 if (nargin == 1)
         oSnd = varargin{1};        
         % === use default settings
-        config_s.i_FFTSize		= 2048;
-        config_s.f_WinSize_sec	= 1025/44100;	% === is 0.0232s at 44100Hz
-        config_s.f_HopSize_sec	= 256/44100;	% === is 0.0058s at 44100Hz
-        config_s.f_sr_hz        = FGetSampRate(oSnd);
-
-		config_s.i_WinSize		= round(config_s.f_WinSize_sec*config_s.f_sr_hz);
-		config_s.i_HopSize		= round(config_s.f_HopSize_sec*config_s.f_sr_hz);
-		config_s.i_FFTSize		= 2^nextpow2(config_s.i_WinSize);
-
-        config_s.w_WinType		= 'hamming';
-        config_s.f_Win_v		= hamming( config_s.i_WinSize );
-        config_s.f_SampRateX	= config_s.f_sr_hz ./ config_s.i_HopSize;
-        config_s.f_BinSize		= config_s.f_sr_hz ./ config_s.i_FFTSize;
-        config_s.f_SampRateY	= config_s.i_FFTSize ./ config_s.f_sr_hz;	% = 1 / config_s.f_BinSize;
-        config_s.w_DistType		= 'pow';
+        config_s=FGetDefaultConfig(oSnd);
+        config_s.f_sr_hz=FGetSampRate(oSnd);
 end
 if (nargin > 1)
         % === use input config structure

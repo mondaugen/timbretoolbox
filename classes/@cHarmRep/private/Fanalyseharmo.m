@@ -109,7 +109,8 @@ end;
 % no window vector is specified, one is created (from a boxcar window) and
 % w_WinType is given the value 'boxcar'. If not, it keeps the name 'custom'.
 if ~isfield(config_s, 'f_Win_v'),
-    fenetre_v	= boxcar(L_n);
+    fenetre_v	= blackman(L_n);
+    config_s.f_Win_v = fenetre_v;
     config_s.w_WinType='blackman';
 else
     if (length(config_s.f_Win_v) ~= L_n),

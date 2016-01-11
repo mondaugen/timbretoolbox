@@ -27,6 +27,8 @@ function c = cSound(varargin)
 %                     second, you would set this field to the array [1*48000
 %                     2*48000]. If it is not specified, all of the first channel
 %                     of the audio file is read.
+% f_Fs              - Sample rate of audio file. (Required only for raw files).
+% 
 %
 % OUTPUTS:
 % ========
