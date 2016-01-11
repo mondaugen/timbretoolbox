@@ -1,5 +1,5 @@
-function [ALLDESC_s,ALLREP_s] = ...
-    Gget_desc_onefile_do_by_chunks(AUDIOFILENAME, do_s, config_s, i_ChunkSize, b_normalized)
+function [ALLDESC_s,ALLREP_s] = Gget_desc_onefile_do_by_chunks(AUDIOFILENAME,...
+                                    do_s, config_s, i_ChunkSize, b_normalized)
 % GGET_DESC_ONEFILE_DO_BY_CHUNKS
 % ==============================
 % Performs descriptor computation. This function is best used for long files as

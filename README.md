@@ -45,7 +45,7 @@ in the MATLAB prompt.
 
 To view the results, you have to load the structures into memory by doing
 ```
-load(‘path/to/data’);
+>> load(‘path/to/data’);
 ```
 There are three different files saved, with different endings to describe each one:
 
@@ -58,7 +58,7 @@ Stores statistics calculated on the time-series in _desc.mat (e.g., mean, median
 
 So in this example, to see the statistics calculated from the file “026_ped_s_mono.wav”, we would do
 ```
-load('results/026_ped_s_mono_stat.mat');
+>> load('results/026_ped_s_mono_stat.mat');
 ```
 and the structure will show up in MATAB’s “Workspace”.
 

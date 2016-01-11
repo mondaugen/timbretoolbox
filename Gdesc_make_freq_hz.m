@@ -4,7 +4,7 @@ function [ALLDESC_s] = Gdesc_make_freq_hz(ALLDESC_s,Snd_o)
 % frequency metrics into absolute ones.
 
 % Fields to multiply by sample rate 
-scale_fields_sr={ 'SpecSpread', 'SpecCent' };
+scale_fields_sr={ 'SpecSpread', 'SpecCent', 'SpecRollOff' };
 % According to Peeters (2011) multiplying spectral skewness and kurtosis by the
 % sampling rate will have no effect.
 
