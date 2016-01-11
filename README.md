@@ -18,16 +18,16 @@ Add this location to path, e.g., by using the MATLAB browser, left-clicking on t
 
 A quick way to do this using the command-line is:
 
-``
+```
 >> addpath(genpath('/path/to/timbretoolbox'));
-``
+```
 
 Compile the mex files. Currently there is only one and must be compiled as
 follows:
 
-``
+```
 >> mex ./classes/@cERBRep/private/rsmooth.c -outdir ./classes/@cERBRep/private/
-``
+```
 
 Make another directory (not inside the “timbretoolbox…” directory) that you will do work in.
 
