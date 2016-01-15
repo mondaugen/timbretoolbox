@@ -46,7 +46,7 @@ function [c] = cERBRep(varargin)
 if nargin == 1
 		oSnd = varargin{1};
 		% use default settings
-        config_s=FGetDefaultConfig();
+        config_s=cERBRep_FGetDefaultConfig();
 		config_s.f_HopSize_sec	= FGetSampRate(oSnd);
 		config_s.i_HopSize		= round(config_s.f_HopSize_sec * FGetSampRate(oSnd));
 end

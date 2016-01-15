@@ -99,7 +99,7 @@ function [c] = cFFTRep(varargin)
 if (nargin == 1)
         oSnd = varargin{1};        
         % === use default settings
-        config_s=FGetDefaultConfig(oSnd);
+        config_s=cFFTRep_FGetDefaultConfig();
         config_s.f_sr_hz=FGetSampRate(oSnd);
 end
 if (nargin > 1)
