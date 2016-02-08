@@ -1,4 +1,4 @@
-function [config_s]=FGetDefaultConfig()
+function [config_s] = cTEERep_FGetDefaultConfig()
 % FGETDEFAULTCONFIG
 %
 % Returns a structure containing a default configuration for object

@@ -1,4 +1,8 @@
 function [s]=GGetDefConfs()
+% Contains the outputs for *_FGetDefaultConfig for all the input
+% representations. These can be used to, for example, populate GUIs. Each
+% item of the resulting cell array contains a field "_settable" which indicates
+% if a user can or cannot set a field with a 1 or 0 resp.
 strs=dir('classes/');
 s={};
 k=1;

@@ -1,4 +1,4 @@
-function [config_s] = FGetDefaultConfig()
+function [config_s] = cSound_FGetDefaultConfig()
 % FGETDEFAULTCONFIG
 %
 % Returns a structure containing a default configuration for object
