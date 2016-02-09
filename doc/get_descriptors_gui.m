@@ -8,17 +8,19 @@ function get_descriptors_gui
                    'ERBfft','cERBRep',...
                    'ERBgam','cERBRep');
     guielems=[];
-    left=0;
-    bottom=0;
-    width=25;
-    height=10;
+    left=10;
+    bottom=10;
+    width=75;
+    height=15;
     max_n=0;
     for fld=fields(names_s)'
         fld=char(fld);
         config_s.(fld)=eval(...
             sprintf('%s_FGetDefaultConfig',names_s.(fld)));
         bottom_=bottom;
-        for fld_=fields(config_s.(fld))'
+        flds_=filter_allowed_fields(fields(config_s.(fld)),names_s.(fld));
+        for fld_=flds_'
+            fld_{1}
             fld_=char(fld_)
             val=config_s.(fld).(fld_);
             left_=left;
@@ -27,7 +29,13 @@ function get_descriptors_gui
                                 'String',fld_,...
                                 'Position',[left_,bottom_,width,height])];
             left_=left_+width;
-            for n=1:length(val)
+            len=0;
+            if isa(val,'char')
+                len=1;
+            else
+                len=length(val);
+            end
+            for n=1:len
                 guielems=[guielems;
                           uicontrol('Style','edit',...
                           'Position',[left_,bottom_,width,height],...
@@ -40,7 +48,7 @@ function get_descriptors_gui
             end
             bottom_=bottom_+height;
         end
-        left=left+width*max_n;
+        left=left+width*(max_n+1);
         max_n=0;
     end
     function set_config_s_cb(source,cbd,extra)
@@ -58,6 +66,21 @@ function get_descriptors_gui
         a_=config_s.(fld).(fld_);
         a_(n)=val;
         config_s.(fld).(fld_)=a_;
+    end
+    function [result] = filter_allowed_fields(flds,rep_type)
+        if strcmp(rep_type,'cFFTRep') | strcmp(rep_type,'cHarmRep')
+            result={};
+            n=1;
+            for f=flds'
+                if ~strcmp(f,'f_Win_v')
+                    result{n}=char(f);
+                    n=n+1;
+                end
+            end
+            result=result';
+        else
+            result=flds;
+        end
     end
 end
 
