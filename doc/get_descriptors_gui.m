@@ -1,4 +1,4 @@
-function get_descriptors_gui
+function get_descriptors_gui(fig_num)
     config_s=struct();
     names_s=struct('SOUND','cSound',...
                    'TEE','cTEERep',...
@@ -12,35 +12,55 @@ function get_descriptors_gui
     bottom=10;
     width=75;
     height=15;
+    edge_marg=2;
+    marg=10;
     max_n=0;
+    fig=figure(fig_num);
+    max_bottom=0;
+    button_width=100;
     for fld=fields(names_s)'
         fld=char(fld);
         config_s.(fld)=eval(...
             sprintf('%s_FGetDefaultConfig',names_s.(fld)));
-        bottom_=bottom;
+        uicontrol('Style','text',...
+                  'Parent',fig,...
+                  'String',fld,...
+                  'Position',[left,bottom,width,height],...
+                  'FontWeight','bold');
+        bottom_=bottom+height+marg;
         flds_=filter_allowed_fields(fields(config_s.(fld)),names_s.(fld));
         for fld_=flds_'
-            fld_{1}
-            fld_=char(fld_)
+            fld_=char(fld_);
             val=config_s.(fld).(fld_);
             left_=left;
             guielems=[guielems;
                       uicontrol('Style','text',...
+                                'Parent',fig,...
                                 'String',fld_,...
                                 'Position',[left_,bottom_,width,height])];
             left_=left_+width;
             len=0;
             if isa(val,'char')
+                % prevent making a field for every character in a string
                 len=1;
             else
                 len=length(val);
             end
             for n=1:len
+                str_='';
+                switch class(val)
+                    case 'double'
+                        str_=num2str(val(n));
+                    otherwise
+                        str_=val;
+                end
                 guielems=[guielems;
                           uicontrol('Style','edit',...
+                          'Parent',fig,...
                           'Position',[left_,bottom_,width,height],...
-                          'Callback',...
-                            {@set_config_s_cb,{fld,fld_,n,class(val)}})];
+                          'String',str_,...
+                          'Callback',@set_config_s_cb,...
+                          'UserData',{fld,fld_,n,class(val)})];
                 left_=left_+width;
                 if (n > max_n)
                     max_n = n;
@@ -48,25 +68,96 @@ function get_descriptors_gui
             end
             bottom_=bottom_+height;
         end
+        if(bottom_ > max_bottom)
+            max_bottom=bottom_;
+        end
         left=left+width*(max_n+1);
         max_n=0;
     end
-    function set_config_s_cb(source,cbd,extra)
+    set(fig,'Position',[0,0,left,max_bottom]);
+    disp_button = uicontrol('Style','pushbutton',...
+                        'Parent',fig,...
+                        'String','Display Configuration',...
+                        'Position',...
+                            [edge_marg,max_bottom-height,button_width,height],...
+                        'Callback',@print_config_cb);
+    load_button = uicontrol('Style','pushbutton',...
+                        'Parent',fig,...
+                        'String','Load Configuration',...
+                        'Position',...
+                         [edge_marg,max_bottom-2*height,button_width,height],...
+                        'Callback',@load_config_cb);
+    save_button = uicontrol('Style','pushbutton',...
+                        'Parent',fig,...
+                        'String','Save Configuration',...
+                        'Position',...
+                         [edge_marg,max_bottom-3*height,button_width,height],...
+                        'Callback',@save_config_cb);
+
+    function load_config_cb(source,cbd)
+        pa=uigetfile();
+        if (pa ~= 0)
+            s=load(pa);
+            config_s=s.config_s;
+            for n_=1:length(guielems)
+                refresh_gui_new_params(n_);
+            end
+        end
+    end 
+
+    function refresh_gui_new_params(n_)
+        % n_ index of guielems array
+        extra=guielems(n_).UserData;
+        if (length(extra) > 0)
+            fld=extra{1};
+            fld_=extra{2};
+            n=extra{3};
+            cls=extra{4};
+            str_='';
+            val=config_s.(fld).(fld_);
+            switch cls
+                case 'double'
+                    str_=num2str(val(n));
+                otherwise
+                    str_=val;
+            end
+            guielems(n_).String=str_;
+        end
+    end
+    
+    function save_config_cb(source,cbd)
+        pa=uiputfile('.mat');
+        if (pa ~= 0)
+            save(pa,'config_s');
+        end
+    end 
+
+    function print_config_cb(source,cbd)
+        for fld=fields(config_s)'
+            fld=char(fld);
+            display(config_s.(fld));
+        end
+    end
+
+    function set_config_s_cb(source,cbd)
+        extra=source.UserData;
         fld=extra{1};
         fld_=extra{2};
         n=extra{3};
         cls=extra{4};
         val=[];
+        a_=config_s.(fld).(fld_);
         switch cls
             case 'double'
                 val=str2num(source.String);
+                a_(n)=val;
             otherwise
                 val=source.String;
+                a_=val;
         end
-        a_=config_s.(fld).(fld_);
-        a_(n)=val;
         config_s.(fld).(fld_)=a_;
     end
+
     function [result] = filter_allowed_fields(flds,rep_type)
         if strcmp(rep_type,'cFFTRep') | strcmp(rep_type,'cHarmRep')
             result={};
@@ -82,6 +173,7 @@ function get_descriptors_gui
             result=flds;
         end
     end
+
 end
 
 %% This is an example of how to compute decscriptors by carrying out analyses on
