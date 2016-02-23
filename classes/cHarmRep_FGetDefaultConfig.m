@@ -4,7 +4,7 @@ function [config_s] = cHarmRep_FGetDefaultConfig()
 % Returns a structure containing a default configuration for object
 % instantiation.
 config_s=struct();
-config_s.f_sr_hz         = GGetDefaultSampRate()
+config_s.f_sr_hz         = GGetDefaultSampRate();
 config_s.threshold_harmo = 0.3;
 config_s.nb_harmo        = 20;
 config_s.f_WinSize_sec   = 0.1; % === analysis window length
