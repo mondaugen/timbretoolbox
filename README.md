@@ -50,14 +50,14 @@ MATLAB path the same way you added the TT to the path.
 
 Run your script either by opening the script and clicking run, or doing
 ```
->> run script\_name
+>> run script_name
 ```
 in the MATLAB prompt.
 
 ## Notes on the examples
 
-See doc/get\_descriptors\_example.m, doc/get\_descriptors\_multifile\_example.m, and
-doc/get\_descriptors\_global\_example.m for examples of scripts that compute
+See doc/get_descriptors_example.m, doc/get_descriptors_multifile_example.m, and
+doc/get_descriptors_global_example.m for examples of scripts that compute
 descriptors.
 
 To view the results, you have to load the structures into memory by doing
@@ -74,24 +74,24 @@ one:
   (e.g., mean, median, etc.).
 
 So in this example, to see the statistics calculated from the file
-“026\_ped\_s\_mono.wav”, we would do
+“026_ped_s_mono.wav”, we would do
 ```
->> load('results/026\_ped\_s\_mono\_stat.mat');
+>> load('results/026_ped_s_mono_stat.mat');
 ```
 and the structure will show up in MATLAB’s “Workspace”.
 
 ## Notes on the graphical user interface (GUI)
 
-A simple GUI is available in scripts/get\_descriptors\_gui.m.
+A simple GUI is available in scripts/get_descriptors_gui.m.
 Run this by executing:
 ```
->> get\_descriptors\_gui()
+>> get_descriptors_gui()
 ```
 from the MATLAB prompt.
 
 Help is available in the GUI, or by typing:
 ```
->> help get\_descriptors\_gui
+>> help get_descriptors_gui
 ```
 
 ##Reporting bugs
