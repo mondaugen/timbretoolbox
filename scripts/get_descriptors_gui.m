@@ -1,4 +1,58 @@
 function get_descriptors_gui(fig_num,load_default_config)
+% GET_DESCRIPTORS_GUI(FIG_NUM,LOAD_DEFAULT_CONFIG)
+%
+% How to use:
+%
+%    Running:
+%        The function can simply be called from the command window. This allows
+%        you to specify the figure number into which the GUI will be drawn. You
+%        can also choose to not load the default configuration file (by
+%        specifying 0 for the load_default_config field), but this is more for
+%        debugging purposes. For example:
+%
+%           >> get_descriptors_gui(3)
+%
+%        Will load the GUI and draw it in figure number 3. By default it is
+%        drawn in figure 1 and that argument to the function may be omitted.
+%
+%    Configuration:
+%        When the GUI loads, a default configuration file is used to populate
+%        all the editable boxes. If it cannot find this file, it will report an
+%        error. You can change these editable boxes as you please. Note that the
+%        GUI is simply a convenient way to specify values that are passed to
+%        functions that do the computation. That means that if values are
+%        contradictory (e.g., a hop size in samples that does not equal the hop
+%        size in seconds) or erroneous (e.g., the window type requested is not
+%        supported or spelled incorrectly), these problems will not be handled
+%        until the computation functions are called.  In the case of
+%        contradictory values, most functions have a predefined hierarchy of
+%        values (e.g., if both hop size in seconds and in samples are specified
+%        the hop size in samples usually takes precident). For erroneous values,
+%        the functions will report an error. You can choose to not specify a
+%        value and have it be filled in with its default by simply omitting the
+%        value (deleting the contents of the field). The GUI is generated from
+%        the values that each function accepts, however sometimes the
+%        specification of a certain value is what makes a compution unique
+%        (e.g., if you specify some other 'w_Method' than 'fft' for the 'ERBfft'
+%        computations, the value will be forced to be 'fft').
+%
+%    Choosing sound files:
+%        Click the button 'Path to soundfiles...' and choose the folder in which
+%        your files are contained.
+%
+%    Choosing the output directory:
+%        Click the button 'Path to descriptors...' and choose the path where the
+%        descriptors will be saved.
+%
+%    Saving configurations:
+%        You can save the configuration you have specified to a file to be
+%        recalled later. The file is simply a MATLAB data file (so it can be
+%        loaded into MATLAB and edited from the command line if you wish).
+%        Simply click on 'Save Configuration' and choose where you would like it
+%        to be saved to.
+%
+%    When you have set up everything, click 'Start Analysis...' to do the analysis.
+
     if (nargin < 2)
         load_default_config=1;
     end
@@ -15,7 +69,7 @@ function get_descriptors_gui(fig_num,load_default_config)
                    'ERBgam','cERBRep');
     sounds_path='/';
     desc_path='/';
-    default_config_path='./get_descriptors_gui_default_config.mat';
+    default_config_path='get_descriptors_gui_default_config.mat';
     guielems=[];
     left=10;
     bottom=10;
@@ -102,6 +156,12 @@ function get_descriptors_gui(fig_num,load_default_config)
                         'Position',...
                          [edge_marg,max_bottom-3*height,button_width,height],...
                         'Callback',@save_config_cb);
+    help_button = uicontrol('Style','pushbutton',...
+                        'Parent',fig,...
+                        'String','Help',...
+                        'Position',...
+                         [edge_marg,max_bottom-4*height,button_width,height],...
+                        'Callback',@disp_help_cb);
     sounds_path_button = uicontrol('Style','pushbutton',...
                         'Parent',fig,...
                         'String','Path to soundfiles...',...
@@ -121,17 +181,19 @@ function get_descriptors_gui(fig_num,load_default_config)
                          [edge_marg+button_width,max_bottom-3*height,button_width,height],...
                         'BackgroundColor','g',...
                         'Callback',@compute_descriptors);
+    % Height adjusted here because little bits of text would show from the
+    % following lines if the text didn't fit in the text box.
     sounds_path_display = uicontrol('Style','text',...
                         'Parent',fig,...
                         'String',sounds_path,...
                         'Position',...
-                         [edge_marg+2*button_width,max_bottom-height,2*button_width,height],...
+                         [edge_marg+2*button_width,max_bottom-height,button_width,height-2],...
                          'HorizontalAlignment','left');
     desc_path_display = uicontrol('Style','text',...
                         'Parent',fig,...
                         'String',desc_path,...
                         'Position',...
-                         [edge_marg+2*button_width,max_bottom-2*height,2*button_width,height],...
+                         [edge_marg+2*button_width,max_bottom-2*height,button_width,height-2],...
                          'HorizontalAlignment','left');
     
     if (load_default_config)
@@ -141,6 +203,10 @@ function get_descriptors_gui(fig_num,load_default_config)
         for n_=1:length(guielems)
             refresh_gui_new_params(n_);
         end
+    end
+
+    function disp_help_cb(source,cbd)
+        help('get_descriptors_gui');
     end
 
     function set_sounds_path_cb(source,cbd)
@@ -160,9 +226,9 @@ function get_descriptors_gui(fig_num,load_default_config)
     end
 
     function load_config_cb(source,cbd)
-        pa=uigetfile('*.mat');
-        if (pa ~= 0)
-            s=load(pa);
+        [fn,pa]=uigetfile('*.mat');
+        if ([pa,fn] ~= 0)
+            s=load([fn,pa]);
             config_s=s.config_s;
             for n_=1:length(guielems)
                 refresh_gui_new_params(n_);
@@ -179,21 +245,26 @@ function get_descriptors_gui(fig_num,load_default_config)
             n=extra{3};
             cls=extra{4};
             str_='';
-            val=config_s.(fld).(fld_);
-            switch cls
-                case 'double'
-                    str_=num2str(val(n));
-                otherwise
-                    str_=val;
+            if (isfield(config_s.(fld),fld_)==1)
+                % Only load into GUI field if field present in struct
+                val=config_s.(fld).(fld_);
+                switch cls
+                    case 'double'
+                        str_=num2str(val(n));
+                    otherwise
+                        str_=val;
+                end
             end
+            % If field was present, str_ will contain its value, otherwise it
+            % will be a string of length 0
             guielems(n_).String=str_;
         end
     end
     
     function save_config_cb(source,cbd)
-        pa=uiputfile('.mat');
-        if (pa ~= 0)
-            save(pa,'config_s');
+        [fn,pa]=uiputfile('.mat');
+        if (fn ~= 0)
+            save([pa,fn],'config_s');
         end
     end 
 
@@ -212,15 +283,20 @@ function get_descriptors_gui(fig_num,load_default_config)
         cls=extra{4};
         val=[];
         a_=config_s.(fld).(fld_);
-        switch cls
-            case 'double'
-                val=str2num(source.String);
-                a_(n)=val;
-            otherwise
-                val=source.String;
-                a_=val;
+        if (length(source.String) == 0)
+            % Remove field if value from GUI element is string of length 0
+            config_s.(fld)=rmfield(config_s.(fld),fld_);
+        else
+            switch cls
+                case 'double'
+                    val=str2num(source.String);
+                    a_(n)=val;
+                otherwise
+                    val=source.String;
+                    a_=val;
+            end
+            config_s.(fld).(fld_)=a_;
         end
-        config_s.(fld).(fld_)=a_;
     end
 
     function [result] = filter_allowed_fields(flds,rep_type)

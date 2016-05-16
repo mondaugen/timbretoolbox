@@ -1,10 +1,11 @@
 % This is an example of how to compute decscriptors by carrying out analyses on
-% subsections of the soundfile read off the disk. See
+% subsections of soundfiles read off the disk. This script allows specifying a
+% directory full of files and analyses are carried out on each file. See
 % Gget_desc_onefile_do_by_chunks.m to see the pros and cons of this method.
 % To run this example, make sure the path to this file is included in the MATLAB
 % path and do
 %
-% >> run 'get_descriptors_example.m'
+% >> run 'get_descriptors_multifile_example.m'
 %
 % In a MATLAB prompt.
 

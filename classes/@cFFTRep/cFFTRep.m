@@ -77,10 +77,10 @@
 %                 size is 16 samples, the hop size is 2 samples and the window
 %                 size is 5 samples, the highest index attained where the window
 %                 still fits within the chunk is 11. So the next hop we want to
-%                 compute is at index 13 but before we can do that, we must
-%                 read in more samples. Before reading in more samples,
-%                 increment the read head by 12 to place the beginning of the
-%                 chunk where the next hop should land.
+%                 compute is at index 13 but before we can do that, we must read
+%                 in more samples. Before reading in more samples, increment the
+%                 read head by 12 to place the beginning of the chunk where the
+%                 next hop should land.
 % 
 %
 % Member functions
