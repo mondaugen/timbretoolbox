@@ -2,15 +2,13 @@
 
 ##Obtaining the TT
 
-Releases:
-https://github.com/mondaugen/timbretoolbox/releases
-
 Development versions:
 https://github.com/mondaugen/timbretoolbox
 
 ##How to use
 
-Download a release or development version.
+Download a development version either using git or clicking on the "Download
+ZIP" link.
 
 Decompress the archive to some location. For this documentation we will assume
 you have decompressed it to a folder named "timbretoolbox".
