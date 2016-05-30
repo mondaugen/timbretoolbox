@@ -93,7 +93,8 @@ for n_=(1:length(filenames))
             save([out_dir_name '/' filebasename '_desc.mat'],'ALLDESC_s');
             save([out_dir_name '/' filebasename '_rep.mat'],'ALLREP_s');
             save([out_dir_name '/' filebasename '_stat.mat'],'ALLDESCSTATS_s');
+            clear ALLDESCSTATS_s;
         end
-        clear ALLDESC_s ALLREP_s ALLDESCSTATS_s;
+        clear ALLDESC_s ALLREP_s;
     end
 end
