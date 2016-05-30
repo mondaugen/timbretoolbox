@@ -86,12 +86,14 @@ for n_=(1:length(filenames))
         filename=filenames(n_).name;
         % Compute descriptors and representations
         [ALLDESC_s, ALLREP_s] = Gget_desc_onefile_do_by_chunks(filename,do_s,config_s,131072,0);
-        ALLDESCSTATS_s=Gget_statistics(ALLDESC_s);
-        filebasename=filename(1:find(filename == '.',1,'last')-1);
-        % Save descriptors and representations to files
-        save([out_dir_name '/' filebasename '_desc.mat'],'ALLDESC_s');
-        save([out_dir_name '/' filebasename '_rep.mat'],'ALLREP_s');
-        save([out_dir_name '/' filebasename '_stat.mat'],'ALLDESCSTATS_s');
+        if ((length(fields(ALLDESC_s))>0) & (length(fields(ALLREP_s))>0))
+            ALLDESCSTATS_s=Gget_statistics(ALLDESC_s);
+            filebasename=filename(1:find(filename == '.',1,'last')-1);
+            % Save descriptors and representations to files
+            save([out_dir_name '/' filebasename '_desc.mat'],'ALLDESC_s');
+            save([out_dir_name '/' filebasename '_rep.mat'],'ALLREP_s');
+            save([out_dir_name '/' filebasename '_stat.mat'],'ALLDESCSTATS_s');
+        end
         clear ALLDESC_s ALLREP_s ALLDESCSTATS_s;
     end
 end

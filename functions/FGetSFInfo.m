@@ -22,5 +22,5 @@ switch what
                 info=[info__.TotalSamples info__.NumChannels];
         end
     otherwise
-        error('Not a valid piece of information to query.');
+        error(sprintf('%s not a valid piece of information to query.',what));
 end
