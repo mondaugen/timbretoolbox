@@ -391,9 +391,9 @@ function get_descriptors_gui(fig_num,size_scalar)
                     ALLDESCSTATS_s=Gget_statistics(ALLDESC_s);
                     filebasename=filename(1:find(filename == '.',1,'last')-1);
                     % Save descriptors and representations to files
-                    save([out_dir_name '/' filebasename '_desc.mat'],'ALLDESC_s');
-                    save([out_dir_name '/' filebasename '_rep.mat'],'ALLREP_s');
-                    save([out_dir_name '/' filebasename '_stat.mat'],'ALLDESCSTATS_s');
+                    save([desc_path '/' filebasename '_desc.mat'],'ALLDESC_s');
+                    save([desc_path '/' filebasename '_rep.mat'],'ALLREP_s');
+                    save([desc_path '/' filebasename '_stat.mat'],'ALLDESCSTATS_s');
                     clear ALLDESCSTATS_s;
                 end
                 clear ALLDESC_s ALLREP_s;
