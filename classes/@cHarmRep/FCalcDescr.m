@@ -18,6 +18,8 @@
 
 function [dFFTHarm_s] = FCalcDescr(c)
 
+FCalcDescrCheckFields(c);
+
 do_affiche = 0;
 
 i_Offset = 0;

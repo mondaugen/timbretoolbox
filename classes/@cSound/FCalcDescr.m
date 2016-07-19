@@ -24,6 +24,7 @@ function [dTEE_s, dAS_s] = FCalcDescr(c, config_s)
 % Permission is only granted to use for research purposes
 %
 
+FCalcDescrCheckFields(c);
 
 if ~isfield(config_s,'xcorr_nb_coeff'),
     config_s.xcorr_nb_coeff = 12;

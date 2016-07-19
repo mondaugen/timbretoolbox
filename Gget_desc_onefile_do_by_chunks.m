@@ -159,7 +159,16 @@ if ~BADFILE
             end;
             config_s.SOUND.i_SampleRange_v=[rangeMin,rangeMax];
             Snd_o = cSound(AUDIOFILENAME,config_s.SOUND);
-            [TEE,AS]=FCalcDescr(Snd_o,config_s.TEE);
+            try
+                [TEE,AS]=FCalcDescr(Snd_o,config_s.TEE);
+            catch ME
+                switch ME.identifier
+                    case 'FCalcDescr:BadSize'
+                        break
+                    otherwise
+                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                end
+            end
             if isfield(ALLDESC_s,'TEE') && isfield(ALLDESC_s,'AS'),
                 ALLDESC_s.TEE=[ALLDESC_s.TEE,cTEEDescr(TEE)];
                 ALLDESC_s.AS=[ALLDESC_s.AS,cASDescr(AS)];
@@ -196,7 +205,16 @@ if ~BADFILE
                 FFT1_o=cFFTRep(Snd_o,config_s.STFTmag,[]);
                 ALLREP_s.STFTmag=FFT1_o;
             end
-    	    STFTmag		= FCalcDescr(FFT1_o);
+            try
+    	        STFTmag		= FCalcDescr(FFT1_o);
+            catch ME
+                switch ME.identifier
+                    case 'FCalcDescr:BadSize'
+                        break
+                    otherwise
+                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                end
+            end
             if isfield(ALLDESC_s,'STFTmag'),
                 ALLDESC_s.STFTmag=[ALLDESC_s.STFTmag,cFFTDescr(STFTmag)];
             else,
@@ -237,7 +255,16 @@ if ~BADFILE
                 FFT2_o=cFFTRep(Snd_o,config_s.STFTpow,[]);
                 ALLREP_s.STFTpow=FFT2_o;
             end
-    	    STFTpow		= FCalcDescr(FFT2_o);
+            try
+    	        STFTpow		= FCalcDescr(FFT2_o);
+            catch ME
+                switch ME.identifier
+                    case 'FCalcDescr:BadSize'
+                        break
+                    otherwise
+                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                end
+            end
             if isfield(ALLDESC_s,'STFTpow'),
                 ALLDESC_s.STFTpow=[ALLDESC_s.STFTpow,cFFTDescr(STFTpow)];
             else,
@@ -277,7 +304,16 @@ if ~BADFILE
                 Harm_o=cHarmRep(Snd_o,config_s.Harmonic,[]);
                 ALLREP_s.Harmonic=Harm_o;
             end
-    	    Harmonic		= FCalcDescr(Harm_o);
+            try
+    	        Harmonic		= FCalcDescr(Harm_o);
+            catch ME
+                switch ME.identifier
+                    case 'FCalcDescr:BadSize'
+                        break
+                    otherwise
+                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                end
+            end
             if isfield(ALLDESC_s,'Harmonic'),
                 ALLDESC_s.Harmonic=[ALLDESC_s.Harmonic,cHarmDescr(Harmonic)];
             else,
@@ -318,7 +354,18 @@ if ~BADFILE
                 ERB1_o=cERBRep(Snd_o,config_s.ERBfft,[]);
                 ALLREP_s.ERBfft=ERB1_o;
             end
-    	    ERBfft		= FCalcDescr(ERB1_o);
+%             ERBfft		= FCalcDescr(ERB1_o);
+
+            try
+    	        ERBfft		= FCalcDescr(ERB1_o);
+            catch ME
+                switch ME.identifier
+                    case 'FCalcDescr:BadSize'
+                        break
+                    otherwise
+                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                end
+            end
             if isfield(ALLDESC_s,'ERBfft'),
                 ALLDESC_s.ERBfft=[ALLDESC_s.ERBfft,cERBDescr(ERBfft)];
             else,
@@ -356,7 +403,16 @@ if ~BADFILE
                 ERB2_o = cERBRep(Snd_o, config_s.ERBgam, []);
                 ALLREP_s.ERBgam=ERB2_o;
             end
-    	    ERBgam 		= FCalcDescr(ERB2_o);
+            try
+    	        ERBgam 		= FCalcDescr(ERB2_o);
+            catch ME
+                switch ME.identifier
+                    case 'FCalcDescr:BadSize'
+                        break
+                    otherwise
+                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                end
+            end
             if isfield(ALLDESC_s,'ERBgam'),
                 ALLDESC_s.ERBgam=[ALLDESC_s.ERBgam,cERBDescr(ERBgam)];
             else,

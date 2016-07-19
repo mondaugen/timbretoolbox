@@ -12,6 +12,7 @@
 % ========
 % - desc_s:		...
 %
+%
 % See c2xDistr, cFFTRep, cERBRep
 %
 % Copyright (c) 2011 IRCAM/McGill, All Rights Reserved.
@@ -19,6 +20,8 @@
 %
 
 function [desc_s] = FCalcDescr(c)
+
+FCalcDescrCheckFields(c);
 
 do_affiche = 0;
 
