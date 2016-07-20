@@ -118,62 +118,134 @@ ALLREP_s=struct();
 config_s.ERBfft.w_Method	= 'fft';
 config_s.ERBgam.w_Method	= 'gammatone';
 
-if( do_s.b_TEE )
-	% === Time-domain Representation (log attack time, envelope, etc)
-	fprintf(1, 'Descriptors based on Temporal Energy Envelope / Audio Signal\n');
-    [TEE,AS]=FCalcDescr(Snd_o,config_s.TEE);
-    ALLDESC_s.TEE=cTEEDescr(TEE);
-    ALLDESC_s.AS=cASDescr(AS);
+while (true)
+    if( do_s.b_TEE )
+    	% === Time-domain Representation (log attack time, envelope, etc)
+    	fprintf(1, 'Descriptors based on Temporal Energy Envelope / Audio Signal\n');
+        try
+            [TEE,AS]=FCalcDescr(Snd_o,config_s.TEE);
+        catch ME
+            switch ME.identifier
+                case 'FCalcDescr:BadSize'
+                    break
+                otherwise
+                    rethrow(ME);
+            end
+        end
+        ALLDESC_s.TEE=cTEEDescr(TEE);
+        ALLDESC_s.AS=cASDescr(AS);
+    end
+    break
 end
 
-if( do_s.b_STFTmag )
-	% === STFT Representation mag-scale
-	fprintf(1, 'Descriptors based on STFTmag\n');
-    config_s.STFTmag.w_DistType	= 'mag'; % other config. args. will take defaults
-    FFT1_o=cFFTRep(Snd_o,config_s.STFTmag,[]);
-    ALLREP_s.STFTmag=FFT1_o;
-    STFTmag	= FCalcDescr(FFT1_o);
-    ALLDESC_s.STFTmag=cFFTDescr(STFTmag);
+while (true)
+    if( do_s.b_STFTmag )
+    	% === STFT Representation mag-scale
+    	fprintf(1, 'Descriptors based on STFTmag\n');
+        config_s.STFTmag.w_DistType	= 'mag'; % other config. args. will take defaults
+        FFT1_o=cFFTRep(Snd_o,config_s.STFTmag,[]);
+        ALLREP_s.STFTmag=FFT1_o;
+        try
+            STFTmag	= FCalcDescr(FFT1_o);
+        catch ME
+            switch ME.identifier
+                case 'FCalcDescr:BadSize'
+                    break
+                otherwise
+                    rethrow(ME);
+            end
+        end
+        ALLDESC_s.STFTmag=cFFTDescr(STFTmag);
+    end
+    break
 end
 
-if( do_s.b_STFTpow )
-	% === STFT Representation power-scale
-	fprintf(1, 'Descriptors based on STFTpow\n');
-    config_s.STFTpow.w_DistType	= 'pow'; % other config. args. will take defaults
-    FFT2_o=cFFTRep(Snd_o,config_s.STFTpow,[]);
-    ALLREP_s.STFTpow=FFT2_o;
-    STFTpow	= FCalcDescr(FFT2_o);
-    ALLDESC_s.STFTpow=cFFTDescr(STFTpow);
-end;
+while (true)
+    if( do_s.b_STFTpow )
+    	% === STFT Representation power-scale
+    	fprintf(1, 'Descriptors based on STFTpow\n');
+        config_s.STFTpow.w_DistType	= 'pow'; % other config. args. will take defaults
+        FFT2_o=cFFTRep(Snd_o,config_s.STFTpow,[]);
+        ALLREP_s.STFTpow=FFT2_o;
+        try
+            STFTpow	= FCalcDescr(FFT2_o);
+        catch ME
+            switch ME.identifier
+                case 'FCalcDescr:BadSize'
+                    break
+                otherwise
+                    rethrow(ME);
+            end
+        end
+        ALLDESC_s.STFTpow=cFFTDescr(STFTpow);
+    end
+    break
+end
 
-if( do_s.b_Harmonic )
-	% === Sinusoidal Harmonic Model Representation
-	fprintf(1, 'Descriptors based on Harmonic\n');
-    Harm_o=cHarmRep(Snd_o,config_s.Harmonic,[]);
-    ALLREP_s.Harmonic=Harm_o;
-    Harmonic		= FCalcDescr(Harm_o);
-    ALLDESC_s.Harmonic=cHarmDescr(Harmonic);
+while (true)
+    if( do_s.b_Harmonic )
+    	% === Sinusoidal Harmonic Model Representation
+    	fprintf(1, 'Descriptors based on Harmonic\n');
+        Harm_o=cHarmRep(Snd_o,config_s.Harmonic,[]);
+        ALLREP_s.Harmonic=Harm_o;
+        try
+            Harmonic		= FCalcDescr(Harm_o);
+        catch ME
+            switch ME.identifier
+                case 'FCalcDescr:BadSize'
+                    break
+                otherwise
+                    rethrow(ME);
+            end
+        end
+        ALLDESC_s.Harmonic=cHarmDescr(Harmonic);
+    end
+    break
 end
 
 
 % === Equivalent Rectangular Bandwidth (ERB) Representation
-if( do_s.b_ERBfft )
-	% === ERB power spectrum using fft method
-	fprintf(1, 'Descriptors based on ERBfft\n');
-    ERB1_o=cERBRep(Snd_o,config_s.ERBfft,[]);
-    ALLREP_s.ERBfft=ERB1_o;
-    ERBfft		= FCalcDescr(ERB1_o);
-    ALLDESC_s.ERBfft=cERBDescr(ERBfft);
+while (true)
+    if( do_s.b_ERBfft )
+    	% === ERB power spectrum using fft method
+    	fprintf(1, 'Descriptors based on ERBfft\n');
+        ERB1_o=cERBRep(Snd_o,config_s.ERBfft,[]);
+        ALLREP_s.ERBfft=ERB1_o;
+        try
+            ERBfft		= FCalcDescr(ERB1_o);
+        catch ME
+            switch ME.identifier
+                case 'FCalcDescr:BadSize'
+                    break
+                otherwise
+                    rethrow(ME);
+            end
+        end
+        ALLDESC_s.ERBfft=cERBDescr(ERBfft);
+    end
+    break
 end
 
-if( do_s.b_ERBgam )
-	% === ERB power spectrum using gammatone filterbank method
-	fprintf(1, 'Descriptors based on ERBgam\n');
-	config_s.ERBgam.w_Method	= 'gammatone';
-    ERB2_o = cERBRep(Snd_o, config_s.ERBgam, []);
-    ALLREP_s.ERBgam=ERB2_o;
-    ERBgam 		= FCalcDescr(ERB2_o);
-    ALLDESC_s.ERBgam=cERBDescr(ERBgam);
+while (true)
+    if( do_s.b_ERBgam )
+    	% === ERB power spectrum using gammatone filterbank method
+    	fprintf(1, 'Descriptors based on ERBgam\n');
+    	config_s.ERBgam.w_Method	= 'gammatone';
+        ERB2_o = cERBRep(Snd_o, config_s.ERBgam, []);
+        ALLREP_s.ERBgam=ERB2_o;
+        try
+            ERBgam 		= FCalcDescr(ERB2_o);
+        catch ME
+            switch ME.identifier
+                case 'FCalcDescr:BadSize'
+                    break
+                otherwise
+                    rethrow(ME);
+            end
+        end
+        ALLDESC_s.ERBgam=cERBDescr(ERBgam);
+    end
+    break
 end
 
 flds=fields(ALLDESC_s);

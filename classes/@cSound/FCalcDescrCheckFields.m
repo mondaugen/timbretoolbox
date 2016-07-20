@@ -13,7 +13,7 @@ function FCalcDescrCheckFields(c)
 
 % Check validity of fields of c
 errorStruct=struct();
-if (c.i_Len == 0)
+if (c.i_Len < c.i_WinSize)
     errorStruct.message=sprintf('Bad size: (%d)',c.i_Len);
     errorStruct.identifier='FCalcDescr:BadSize';
     error(errorStruct);
