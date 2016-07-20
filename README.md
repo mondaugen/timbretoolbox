@@ -3,7 +3,7 @@
 ##Obtaining the TT
 
 Development versions:
-https://github.com/mondaugen/timbretoolbox
+`https://github.com/mondaugen/timbretoolbox`
 
 ##How to use
 
@@ -31,10 +31,10 @@ follows:
 >> mex ./classes/@cERBRep/private/rsmooth.c -outdir ./classes/@cERBRep/private/
 ```
 
-Make another directory (not inside the “timbretoolbox…” directory) that you will
+Make another directory (not inside the `timbretoolbox…` directory) that you will
 do work in.
 
-Copy the scripts from “timbretoolbox/doc/“ to this directory, or simply use them
+Copy the scripts from `timbretoolbox/doc/` to this directory, or simply use them
 as a guide for writing new scripts.
 
 The reason we suggest making a new directory is so when you download new
@@ -52,10 +52,66 @@ Run your script either by opening the script and clicking run, or doing
 ```
 in the MATLAB prompt.
 
+## Notes on using with a Git repository
+
+A convenient way to incorporate the newest improvements and bug-fixes to your
+workflow using the TT is to use version control. Fans of the command line can
+simply clone as follows
+
+```
+cd /some/directory/where/you/work
+git clone https://github.com/mondaugen/timbretoolbox
+```
+
+This will create a folder called "timbretoolbox" and will contain the latest
+version of the master branch of the repository. When you want the latest changes
+to the repository, simply do
+
+```
+cd /some/directory/where/you/work/timbretoolbox
+git pull
+```
+Those who prefer the MATLAB interface to Git can do as follows (The following
+has only been tested on MATLAB versions R2015a-b but will probably work in other
+later versions).
+
+In MATLAB
+- Navigate to `/some/directory/where/you/work`.
+- Right-click on some white space in the "Current Folder" pane.
+- Select "Source Control -> Manage Files".
+A dialog with title "Manage Files Using Source Control" will appear.
+- From the drop-down menu next to "Source control integration:" select "Git".
+- In the textbox next to "Repository path:" type `https://github.com/mondaugen/timbretoolbox`.
+- In the textbox next to "Sandbox:" type
+  `/some/directory/where/you/work/timbretoolbox`.
+- Then click "Retrieve". It will probably ask if you want to create the
+  `timbretoolbox` folder, click "Yes".
+- It should retrieve the files and the "Current Folder" pane should be in the
+  timbretoolbox folder.
+
+After doing this, you will have the latest version of the master branch of the
+repository. To get updates to the repository (if they are available) do as
+follows:
+
+With "Current Folder" located at `/some/directory/where/you/work/timbretoolbox`,
+- right-click on some white space in the "Current Folder" pane.
+- Select "Source control -> Fetch". This will obtain the latest changes to the
+  repository. As far as I can tell, there is no visual feedback when this
+  happens.
+- Then right-click on some white space again and select "Source Control ->
+  Manage Branches".
+A dialog with title "Manage Branches" will appear.
+- In the drop-down menu next to "Branches:", select the branch
+  `refs/remotes/origin/master`
+- Then click on "Merge".
+- Close the dialog.
+You should now have the latest changes from the repository at
+`https://github.com/mondaugen/timbretoolbox`.
+
 ## Notes on the examples
 
-See doc/get_descriptors_example.m, doc/get_descriptors_multifile_example.m, and
-doc/get_descriptors_global_example.m for examples of scripts that compute
+See `doc/get_descriptors_example.m`, `doc/get_descriptors_multifile_example.m`, and
+`doc/get_descriptors_global_example.m` for examples of scripts that compute
 descriptors.
 
 To view the results, you have to load the structures into memory by doing
@@ -72,7 +128,7 @@ one:
   (e.g., mean, median, etc.).
 
 So in this example, to see the statistics calculated from the file
-“026_ped_s_mono.wav”, we would do
+`026_ped_s_mono.wav`, we would do
 ```
 >> load('results/026_ped_s_mono_stat.mat');
 ```
@@ -96,4 +152,4 @@ Help is available in the GUI, or by typing:
 
 If you find that something is not working properly, please report it here:
 
-https://github.com/mondaugen/timbretoolbox/issues
+`https://github.com/mondaugen/timbretoolbox/issues`
