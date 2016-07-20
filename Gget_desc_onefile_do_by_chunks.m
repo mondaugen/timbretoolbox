@@ -356,8 +356,6 @@ if ~BADFILE
                 ERB1_o=cERBRep(Snd_o,config_s.ERBfft,[]);
                 ALLREP_s.ERBfft=ERB1_o;
             end
-%             ERBfft		= FCalcDescr(ERB1_o);
-
             try
     	        ERBfft		= FCalcDescr(ERB1_o);
             catch ME
