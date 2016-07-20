@@ -121,6 +121,7 @@ else
         nSamples=sfSizeInfo(1);
         nChannels=sfSizeInfo(2);
     catch ME
+        % If not audio file, we use BADFILE flag to skip file (no error).
         switch ME.identifier
             case 'MATLAB:audiovideo:audioinfo:NoAudio'
                 BADFILE=1;
