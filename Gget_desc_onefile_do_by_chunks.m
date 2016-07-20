@@ -122,8 +122,10 @@ else
         nChannels=sfSizeInfo(2);
     catch ME
         switch ME.identifier
-        case 'MATLAB:audiovideo:audioinfo:NoAudio'
-            BADFILE=1;
+            case 'MATLAB:audiovideo:audioinfo:NoAudio'
+                BADFILE=1;
+            otherwise
+                rethrow(ME);
         end
     end
 end
@@ -166,7 +168,7 @@ if ~BADFILE
                     case 'FCalcDescr:BadSize'
                         break
                     otherwise
-                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                        rethrow(ME);
                 end
             end
             if isfield(ALLDESC_s,'TEE') && isfield(ALLDESC_s,'AS'),
@@ -212,7 +214,7 @@ if ~BADFILE
                     case 'FCalcDescr:BadSize'
                         break
                     otherwise
-                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                        rethrow(ME);
                 end
             end
             if isfield(ALLDESC_s,'STFTmag'),
@@ -262,7 +264,7 @@ if ~BADFILE
                     case 'FCalcDescr:BadSize'
                         break
                     otherwise
-                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                        rethrow(ME);
                 end
             end
             if isfield(ALLDESC_s,'STFTpow'),
@@ -311,7 +313,7 @@ if ~BADFILE
                     case 'FCalcDescr:BadSize'
                         break
                     otherwise
-                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                        rethrow(ME);
                 end
             end
             if isfield(ALLDESC_s,'Harmonic'),
@@ -363,7 +365,7 @@ if ~BADFILE
                     case 'FCalcDescr:BadSize'
                         break
                     otherwise
-                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                        rethrow(ME);
                 end
             end
             if isfield(ALLDESC_s,'ERBfft'),
@@ -410,7 +412,7 @@ if ~BADFILE
                     case 'FCalcDescr:BadSize'
                         break
                     otherwise
-                        error(sprintf('FCalcDescr error: %s',ME.identifier))
+                        rethrow(ME);
                 end
             end
             if isfield(ALLDESC_s,'ERBgam'),
